@@ -24,6 +24,11 @@ public class TopicController {
         var res = topicService.getByCode(code);
         return ResponseEntity.ok(res);
     }
+    @PostMapping
+    public ResponseEntity<?> updateTopic(@Valid @RequestBody TopicRequest req) {
+        var res = topicService.updateByCode(req);
+        return ResponseEntity.ok(res);
+    }
 
     @PostMapping
     public ResponseEntity<?> addTopic(@Valid @RequestBody TopicRequest topic) {

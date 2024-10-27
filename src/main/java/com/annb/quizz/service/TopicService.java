@@ -11,4 +11,6 @@ public interface TopicService {
     Topic getByCode(String code);
 
     Topic createTopic(TopicRequest topic);
+
+    Topic updateByCode(TopicRequest code);
 }

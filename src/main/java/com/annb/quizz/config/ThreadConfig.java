@@ -1,4 +1,4 @@
-package com.annb.quizz.config;
-
-public class ThreadConfig {
-}
+//package com.annb.quizz.config;
+//
+//public class ThreadConfig {
+//}

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +33,18 @@ public class TopicServiceImpl implements TopicService {
     @Transactional
     public Topic createTopic(TopicRequest topic) {
         Topic newTopic = new Topic();
+        newTopic.setId(UUID.randomUUID().toString().replace("-", ""));
         newTopic.setCode(topic.getCode());
         newTopic.setTitle(topic.getTitle());
         newTopic.setDescription(topic.getDescription());
         return topicRepository.save(newTopic);
+    }
+
+    @Override
+    public Topic updateByCode(TopicRequest request) {
+        Topic topic = topicRepository.findByCode(request.getCode()).orElseThrow(() -> new ResourceNotFoundException("Topic", "code", code));
+        topic.setTitle(request.getTitle());
+        topic.setDescription(request.getDescription());
+        return topicRepository.save(topic);
     }
 }
