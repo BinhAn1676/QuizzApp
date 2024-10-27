@@ -21,4 +21,6 @@ public class Question extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "quizz_id")
     private Quizz quizz;
+    @Column(name = "question_type")
+    private Integer questionType;
 }
