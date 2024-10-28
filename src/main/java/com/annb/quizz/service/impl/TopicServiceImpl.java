@@ -1,11 +1,15 @@
 package com.annb.quizz.service.impl;
 
+import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.TopicRequest;
 import com.annb.quizz.entity.Topic;
 import com.annb.quizz.exception.ResourceNotFoundException;
 import com.annb.quizz.repository.TopicRepository;
 import com.annb.quizz.service.TopicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +46,15 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public Topic updateByCode(TopicRequest request) {
-        Topic topic = topicRepository.findByCode(request.getCode()).orElseThrow(() -> new ResourceNotFoundException("Topic", "code", code));
+        Topic topic = topicRepository.findByCode(request.getCode()).orElseThrow(() -> new ResourceNotFoundException("Topic", "code", request.getCode()));
         topic.setTitle(request.getTitle());
         topic.setDescription(request.getDescription());
         return topicRepository.save(topic);
+    }
+
+    @Override
+    public Page<Topic> getTopics(BaseFilter request) {
+        Pageable pageable = PageRequest.of(request.getPageNo(), request.getPageSize());
+        return topicRepository.findFiltered(request.getTextSearch(), request.getFrom(), request.getTo(), pageable);
     }
 }

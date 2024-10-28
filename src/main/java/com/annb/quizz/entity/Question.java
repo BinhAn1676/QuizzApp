@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "question")
 @Setter
@@ -21,6 +24,8 @@ public class Question extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "quizz_id")
     private Quizz quizz;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Answer> answers = new ArrayList<>();
     @Column(name = "question_type")
     private Integer questionType;
 }

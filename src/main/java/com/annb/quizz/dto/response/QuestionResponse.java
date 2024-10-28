@@ -1,4 +1,4 @@
-package com.annb.quizz.dto.request;
+package com.annb.quizz.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,9 +9,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionDto {
+public class QuestionResponse {
+    private String id;
     private String content;
     private Integer questionType;
     private String imageUrl;
-    private List<AnswerDto> answers;
+    private List<AnswerResponse> answers;
 }
