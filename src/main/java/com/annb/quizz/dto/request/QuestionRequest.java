@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionRequest {
+    private String id;
     private String content;
     private Integer questionType;
     private String imageUrl;
