@@ -2,10 +2,7 @@ package com.annb.quizz.service.impl;
 
 import com.annb.quizz.constant.CommonConstant;
 import com.annb.quizz.dto.QuizDto;
-import com.annb.quizz.dto.request.AnswerRequest;
-import com.annb.quizz.dto.request.QuestionRequest;
-import com.annb.quizz.dto.request.QuizRequest;
-import com.annb.quizz.dto.request.BaseFilter;
+import com.annb.quizz.dto.request.*;
 import com.annb.quizz.dto.response.AnswerResponse;
 import com.annb.quizz.dto.response.QuestionResponse;
 import com.annb.quizz.dto.response.QuizResponse;
@@ -25,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -117,5 +115,40 @@ public class QuizzServiceImpl implements QuizzService {
             dto.setStatus(quiz.getStatus());
             return dto;
         });
+    }
+
+    @Override
+    @Transactional
+    public Boolean updateQuiz(QuizUpdateRequest quizDto) {
+        var topic = topicRepository.findByCode(quizDto.getTopicCode())
+                .orElseThrow(() -> new ResourceNotFoundException("Topic", "code", quizDto.getTopicCode()));
+        Quizz quiz = quizzRepository.findById(quizDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizDto.getId()));
+        quiz.setTitle(quizDto.getTitle());
+        quiz.setDescription(quizDto.getDescription());
+        quiz.setStatus(Objects.equals(quizDto.getStatus(), CommonConstant.Status.ACTIVE) ? CommonConstant.Status.ACTIVE : CommonConstant.Status.INACTIVE);
+        quiz.setTopic(topic);
+        var quizSaved = quizzRepository.saveAndFlush(quiz); // Ensure quiz is persisted
+        // Loop through each question and save it
+        for (QuestionRequest questionDto : quizDto.getQuestions()) {
+            Question question = new Question();
+            question.setId(UUID.randomUUID().toString().replace("-", ""));
+            question.setContent(questionDto.getContent());
+            question.setQuizz(quizSaved); // Associate quiz with question
+            question.setImageUrl(questionDto.getImageUrl());
+            question.setQuestionType(questionDto.getQuestionType() == 1 ? CommonConstant.QuestionType.MULTIPLE_CHOICE : CommonConstant.QuestionType.WRITE_CHOICE);
+            var questionSaved = questionRepository.save(question);
+
+            // Save answers corresponding to the question
+            for (AnswerRequest answerDto : questionDto.getAnswers()) {
+                Answer answer = new Answer();
+                answer.setId(UUID.randomUUID().toString().replace("-", ""));
+                answer.setContent(answerDto.getContent());
+                answer.setIsCorrect(answerDto.getIsCorrect());
+                answer.setQuestion(questionSaved); // Associate answer with question
+                answerRepository.save(answer);
+            }
+        }
+        return true;
     }
 }

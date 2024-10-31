@@ -2,6 +2,7 @@ package com.annb.quizz.controller;
 
 import com.annb.quizz.dto.request.QuizRequest;
 import com.annb.quizz.dto.request.BaseFilter;
+import com.annb.quizz.dto.request.QuizUpdateRequest;
 import com.annb.quizz.service.QuizzService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class QuizzController {
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestBody QuizRequest quizDto) throws ExecutionException, InterruptedException {
         var result = quizzService.createQuiz(quizDto);
-        if(result){
+        if (result) {
             return new ResponseEntity<>("createdQuiz successfully", HttpStatus.CREATED);
         }
         return new ResponseEntity<>("createdQuiz Failed", HttpStatus.BAD_REQUEST);
@@ -31,9 +32,19 @@ public class QuizzController {
         var result = quizzService.getQuiz(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
     @GetMapping("/filter")
     public ResponseEntity<?> filterQuiz(@Valid @RequestBody BaseFilter req) {
         var result = quizzService.filter(req);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateQuiz(@Valid @RequestBody QuizUpdateRequest quizDto) throws ExecutionException, InterruptedException {
+        var result = quizzService.updateQuiz(quizDto);
+        if (result) {
+            return new ResponseEntity<>("updated quiz successfully", HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>("updated quiz Failed", HttpStatus.BAD_REQUEST);
     }
 }

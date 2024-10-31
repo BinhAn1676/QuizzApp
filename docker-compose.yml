@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  mysql-container:
+    image: binhan21/mysql:v1
+    container_name: mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]  # Added password
+      timeout: 20s      # Increased timeout
+      retries: 10
+      interval: 10s
+      start_period: 30s # Increased start period
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: quiz_app
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - quiz-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  keycloak:
+    image: binhan21/keycloack:v1
+    container_name: keycloak
+    ports:
+      - "8180:8080"
+    command: "start-dev"
+    networks:
+      - quiz-network
+    depends_on:
+      mysql-container:
+        condition: service_healthy
+
+  quizz:
+    image: binhan21/quizz-app:v1
+    container_name: quiz-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-container:3306/quiz_app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/quizdev/protocol/openid-connect/certs
+    depends_on:
+      mysql-container:
+        condition: service_healthy
+    networks:
+      - quiz-network
+    restart: on-failure
+
+networks:
+  quiz-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
