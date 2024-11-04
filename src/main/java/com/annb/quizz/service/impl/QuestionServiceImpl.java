@@ -4,8 +4,10 @@ import com.annb.quizz.dto.request.QuestionRequest;
 import com.annb.quizz.dto.response.AnswerResponse;
 import com.annb.quizz.dto.response.QuestionResponse;
 import com.annb.quizz.entity.Answer;
+import com.annb.quizz.entity.Question;
 import com.annb.quizz.exception.ResourceNotFoundException;
 import com.annb.quizz.repository.QuestionRepository;
+import com.annb.quizz.repository.RoomRepository;
 import com.annb.quizz.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
+    private final RoomRepository roomRepository;
     @Override
     public QuestionResponse updateQuestion(QuestionRequest req) {
         var question = questionRepository.findById(req.getId())
@@ -81,6 +84,31 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionResponse getQuestion(String id) {
         var question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question", "id", id));
+        var response = new QuestionResponse();
+        response.setQuestionType(question.getQuestionType());
+        response.setContent(question.getContent());
+        response.setImageUrl(question.getImageUrl());
+        response.setId(question.getId());
+        var answerResponse = question.getAnswers()
+                .stream().map(item -> {
+                    AnswerResponse res = new AnswerResponse();
+                    res.setId(item.getId());
+                    res.setContent(item.getContent());
+                    res.setIsCorrect(item.getIsCorrect());
+                    return  res;
+                }).toList();
+        response.setAnswers(answerResponse);
+        return response;
+    }
+
+    @Override
+    public QuestionResponse getQuestionFromRoom(String roomId, String id) {
+        var room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room", "id", roomId));
+        var questionOptional = room.getQuiz().getQuestions().stream().filter(q -> q.getId().equals(id)).findFirst();
+        if(questionOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Question", "id", id);
+        }
+        Question question = questionOptional.get();
         var response = new QuestionResponse();
         response.setQuestionType(question.getQuestionType());
         response.setContent(question.getContent());

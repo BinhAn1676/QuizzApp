@@ -47,4 +47,9 @@ public class QuizzController {
         }
         return new ResponseEntity<>("updated quiz Failed", HttpStatus.BAD_REQUEST);
     }
+    @GetMapping("/question-ids")
+    public ResponseEntity<?> getALlQuestionIdByQuizId(@RequestParam("id") String id) {
+        var result = quizzService.getQuestionIds(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

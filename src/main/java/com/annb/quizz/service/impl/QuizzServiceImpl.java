@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -150,5 +151,11 @@ public class QuizzServiceImpl implements QuizzService {
             }
         }
         return true;
+    }
+
+    @Override
+    public List<String> getQuestionIds(String id) {
+        var quiz = quizzRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
+        return quiz.getQuestions().stream().map(Question::getId).collect(Collectors.toList());
     }
 }

@@ -8,6 +8,7 @@ import com.annb.quizz.dto.response.QuizResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface QuizzService {
@@ -18,4 +19,6 @@ public interface QuizzService {
     Page<QuizDto> filter(@Valid BaseFilter req);
 
     Boolean updateQuiz(@Valid QuizUpdateRequest quizDto);
+
+    List<String> getQuestionIds(String id);
 }

@@ -10,4 +10,6 @@ public interface QuestionService {
     Boolean deleteQuestion(String id);
 
     QuestionResponse getQuestion(String id);
+
+    QuestionResponse getQuestionFromRoom(String roomId, String id);
 }
