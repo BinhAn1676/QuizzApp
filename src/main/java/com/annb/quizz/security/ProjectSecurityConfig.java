@@ -34,7 +34,7 @@ public class ProjectSecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
+                .cors(corsConfig -> corsConfig.disable()/*configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
@@ -46,7 +46,7 @@ public class ProjectSecurityConfig {
                         config.setMaxAge(3600L);
                         return config;
                     }
-                }))
+                })*/)
                 .csrf(csrfConfig -> csrfConfig.disable()/*csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                         .ignoringRequestMatchers("/quiz-room") // Exclude WebSocket path from CSRF
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())*/)
