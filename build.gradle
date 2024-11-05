@@ -33,11 +33,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
@@ -46,6 +43,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.39.0'
 	testImplementation 'org.springframework:spring-websocket-test'
 }
 
