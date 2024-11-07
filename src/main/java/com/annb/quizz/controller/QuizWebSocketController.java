@@ -1,6 +1,7 @@
 package com.annb.quizz.controller;
 
 import com.annb.quizz.dto.response.QuestionResponse;
+import com.annb.quizz.exception.ResourceNotFoundException;
 import com.annb.quizz.service.QuestionService;
 import com.annb.quizz.service.QuizzService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,7 @@ public class QuizWebSocketController {
     @MessageMapping("/room/{roomId}/next-question")
     @SendTo("/topic/room/{roomId}/questions") // This is the topic participants subscribe to
     public QuestionResponse sendNextQuestion(@DestinationVariable String roomId,String id) {
-        var nextQuestion = questionService.getQuestionFromRoom(roomId,id);
-        if (nextQuestion == null) {
-            // Handle the case when there are no more questions
-            throw new RuntimeException("No more questions available");
-        }
-        return nextQuestion; // This sends the question to the specified topic
+        return questionService.getQuestionFromRoom(roomId,id); // This sends the question to the specified topic
     }
 
 }

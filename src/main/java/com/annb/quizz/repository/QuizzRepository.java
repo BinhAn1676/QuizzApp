@@ -13,8 +13,20 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface QuizzRepository extends JpaRepository<Quizz, String> {
-    @Query(value = "SELECT q.* FROM quizz q " +
+    /*@Query(value = "SELECT q.* FROM quizz q " +
             "WHERE (:textSearch IS NULL OR q.description LIKE %:textSearch% OR q.title LIKE %:textSearch%) " +
+            "AND (:status IS NULL OR q.status = :status) " +
+            "AND (:from IS NULL OR DATE(q.created_at) >= DATE(:from)) " +
+            "AND (:to IS NULL OR DATE(q.created_at) <= DATE(:to))",
+            nativeQuery = true)*/
+    @Query(value = "SELECT q.* FROM quizz q " +
+            "JOIN topic t ON q.topic_id = t.id " +
+            "WHERE (:textSearch IS NULL OR q.description LIKE %:textSearch% " +
+            "OR q.title LIKE %:textSearch% " +
+            "OR q.code LIKE %:textSearch% " +
+            "OR t.code LIKE %:textSearch% " +
+            "OR t.name LIKE %:textSearch% " +
+            "OR t.description LIKE %:textSearch%) " +
             "AND (:status IS NULL OR q.status = :status) " +
             "AND (:from IS NULL OR DATE(q.created_at) >= DATE(:from)) " +
             "AND (:to IS NULL OR DATE(q.created_at) <= DATE(:to))",

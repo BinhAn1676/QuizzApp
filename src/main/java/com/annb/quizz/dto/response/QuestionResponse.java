@@ -12,6 +12,8 @@ import java.util.List;
 public class QuestionResponse {
     private String id;
     private String content;
+    private Double point;
+    private Integer time;
     private Integer questionType;
     private String imageUrl;
     private List<AnswerResponse> answers;

@@ -28,6 +28,8 @@ public class QuestionServiceImpl implements QuestionService {
         question.setQuestionType(req.getQuestionType());
         question.setContent(req.getContent());
         question.setImageUrl(req.getImageUrl());
+        question.setPoint(req.getPoint());
+        question.setTime(req.getTime());
         // Get existing answers
         var existingAnswers = question.getAnswers();
 
@@ -57,6 +59,8 @@ public class QuestionServiceImpl implements QuestionService {
         response.setId(savedQuestion.getId());
         response.setQuestionType(savedQuestion.getQuestionType());
         response.setContent(savedQuestion.getContent());
+        response.setPoint(savedQuestion.getPoint());
+        response.setTime(savedQuestion.getTime());
         response.setImageUrl(savedQuestion.getImageUrl());
         var answerResponse = savedQuestion.getAnswers()
                 .stream().map(item -> {
@@ -88,6 +92,8 @@ public class QuestionServiceImpl implements QuestionService {
         response.setQuestionType(question.getQuestionType());
         response.setContent(question.getContent());
         response.setImageUrl(question.getImageUrl());
+        response.setPoint(question.getPoint());
+        response.setTime(question.getTime());
         response.setId(question.getId());
         var answerResponse = question.getAnswers()
                 .stream().map(item -> {
@@ -112,6 +118,8 @@ public class QuestionServiceImpl implements QuestionService {
         var response = new QuestionResponse();
         response.setQuestionType(question.getQuestionType());
         response.setContent(question.getContent());
+        response.setPoint(question.getPoint());
+        response.setTime(question.getTime());
         response.setImageUrl(question.getImageUrl());
         response.setId(question.getId());
         var answerResponse = question.getAnswers()

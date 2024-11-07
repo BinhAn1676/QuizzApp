@@ -55,6 +55,8 @@ public class QuizzServiceImpl implements QuizzService {
             question.setId(UUID.randomUUID().toString().replace("-", ""));
             question.setContent(questionDto.getContent());
             question.setQuizz(quizSaved); // Associate quiz with question
+            question.setPoint(questionDto.getPoint());
+            question.setTime(questionDto.getTime());
             question.setImageUrl(questionDto.getImageUrl());
             question.setQuestionType(questionDto.getQuestionType() == 1 ? CommonConstant.QuestionType.MULTIPLE_CHOICE : CommonConstant.QuestionType.WRITE_CHOICE);
             var questionSaved = questionRepository.save(question);
@@ -85,6 +87,8 @@ public class QuizzServiceImpl implements QuizzService {
                     var questionDto = new QuestionResponse();
                     questionDto.setId(question.getId());
                     questionDto.setContent(question.getContent());
+                    questionDto.setPoint(question.getPoint());
+                    questionDto.setTime(question.getTime());
                     questionDto.setQuestionType(question.getQuestionType());
                     questionDto.setImageUrl(question.getImageUrl());
                     questionDto.setAnswers(
@@ -136,6 +140,8 @@ public class QuizzServiceImpl implements QuizzService {
             question.setId(UUID.randomUUID().toString().replace("-", ""));
             question.setContent(questionDto.getContent());
             question.setQuizz(quizSaved); // Associate quiz with question
+            question.setTime(questionDto.getTime());
+            question.setPoint(questionDto.getPoint());
             question.setImageUrl(questionDto.getImageUrl());
             question.setQuestionType(questionDto.getQuestionType() == 1 ? CommonConstant.QuestionType.MULTIPLE_CHOICE : CommonConstant.QuestionType.WRITE_CHOICE);
             var questionSaved = questionRepository.save(question);

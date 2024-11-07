@@ -21,6 +21,10 @@ public class Question extends BaseEntity{
     private String content;
     @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "point")
+    private Double point;
+    @Column(name = "time_per_question")
+    private Integer time;
     @ManyToOne
     @JoinColumn(name = "quizz_id")
     private Quizz quizz;

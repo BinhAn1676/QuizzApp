@@ -60,7 +60,7 @@ function sendName() {
     if (client.active && name) {
         client.publish({
             destination: app,
-            body: JSON.stringify({ name })
+            body: name
         });
     }
 }
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     buttonDisConnect = document.getElementById("disconnect");
     buttonSend = document.getElementById("send");
     greetings = document.getElementById("greetings");
-    nameInput = document.getElementById("name");
+    nameInput = document.getElementById("questionId");
 
     buttonConnect.addEventListener("click", (e) => {
         e.preventDefault();
