@@ -7,7 +7,9 @@ import com.annb.quizz.dto.request.QuizUpdateRequest;
 import com.annb.quizz.dto.response.QuizResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -21,4 +23,6 @@ public interface QuizzService {
     Boolean updateQuiz(@Valid QuizUpdateRequest quizDto);
 
     List<String> getQuestionIds(String id);
+
+    QuizRequest parseExcelFile(MultipartFile file) throws IOException;
 }

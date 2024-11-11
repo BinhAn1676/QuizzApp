@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.ExecutionException;
 
@@ -51,5 +52,20 @@ public class QuizzController {
     public ResponseEntity<?> getALlQuestionIdByQuizId(@RequestParam("id") String id) {
         var result = quizzService.getQuestionIds(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<?> importQuiz(@RequestParam("file") MultipartFile file) {
+        try {
+            QuizRequest quizRequest = quizzService.parseExcelFile(file);
+            boolean result = quizzService.createQuiz(quizRequest);
+            if (result) {
+                return new ResponseEntity<>("Quiz imported successfully", HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("Quiz import failed", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("Error processing file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

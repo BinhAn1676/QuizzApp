@@ -16,12 +16,18 @@ import com.annb.quizz.repository.QuizzRepository;
 import com.annb.quizz.repository.TopicRepository;
 import com.annb.quizz.service.QuizzService;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -163,5 +169,70 @@ public class QuizzServiceImpl implements QuizzService {
     public List<String> getQuestionIds(String id) {
         var quiz = quizzRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", id));
         return quiz.getQuestions().stream().map(Question::getId).collect(Collectors.toList());
+    }
+
+    @Override
+    public QuizRequest parseExcelFile(MultipartFile file) throws IOException {
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = WorkbookFactory.create(inputStream);
+            Sheet sheet = workbook.getSheet("Sheet1");
+            QuizRequest quizRequest = new QuizRequest();
+            List<QuestionRequest> questionRequests = new ArrayList<>();
+            String currentQuizTitle = null;
+            QuestionRequest currentQuestion = null;
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue; // Skip header row
+
+                // Read quiz details (only set once per quiz)
+                String quizTitle = row.getCell(0).getStringCellValue();
+                if (currentQuizTitle == null || !currentQuizTitle.equals(quizTitle)) {
+                    quizRequest.setTitle(quizTitle);
+                    quizRequest.setDescription(row.getCell(1).getStringCellValue());
+                    quizRequest.setTopicCode(row.getCell(2).getStringCellValue());
+                    currentQuizTitle = quizTitle;
+                }
+                // Check if a new question has started
+                String questionContent = row.getCell(3).getStringCellValue();
+                if (currentQuestion == null || !currentQuestion.getContent().equals(questionContent)) {
+                    // Create a new QuestionRequest
+                    currentQuestion = new QuestionRequest();
+                    currentQuestion.setContent(questionContent);
+                    currentQuestion.setQuestionType((int) row.getCell(4).getNumericCellValue());
+                    // Handle null values for questionPoint and questionTime
+                    if (!row.getCell(5).getCellType().equals(CellType.BLANK)) {
+                        currentQuestion.setPoint(row.getCell(5).getNumericCellValue());
+                    } else {
+                        currentQuestion.setPoint((double) 0); // Set a default value if the cell is blank
+                    }
+                    if (!row.getCell(6).getCellType().equals(CellType.BLANK)) {
+                        currentQuestion.setTime((int) row.getCell(6).getNumericCellValue());
+                    } else {
+                        currentQuestion.setTime(0); // Set a default value if the cell is blank
+                    }
+                    //currentQuestion.setPoint(row.getCell(5).getNumericCellValue());
+                    //currentQuestion.setTime((int) row.getCell(6).getNumericCellValue());
+                    if(currentQuestion.getAnswers()==null){
+                        currentQuestion.setAnswers(new ArrayList<>());
+                    }
+                    questionRequests.add(currentQuestion);
+                }
+                // Read answer details
+                AnswerRequest answerRequest = new AnswerRequest();
+                CellType cellType = row.getCell(7).getCellType();
+                if (cellType == CellType.NUMERIC) {
+                    answerRequest.setContent(String.valueOf(row.getCell(7).getNumericCellValue()));
+                } else {
+                    answerRequest.setContent(row.getCell(7).getStringCellValue());
+                }
+                answerRequest.setIsCorrect(row.getCell(8).getBooleanCellValue());
+                // Associate answer with question
+                currentQuestion.getAnswers().add(answerRequest);
+            }
+            quizRequest.setQuestions(questionRequests);
+            workbook.close();
+            return quizRequest;
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid file format. Please upload a valid Excel file (.xls or .xlsx).");
+        }
     }
 }
