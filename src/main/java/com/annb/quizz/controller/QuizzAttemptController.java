@@ -21,7 +21,7 @@ public class QuizzAttemptController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public ResponseEntity<?> filterQuizLog(@Valid @RequestBody AttemptLogRequest req) {
         var res = quizzAttemptService.fitlerQuizLog(req);
         return ResponseEntity.ok(res);

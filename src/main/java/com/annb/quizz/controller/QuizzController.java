@@ -22,10 +22,7 @@ public class QuizzController {
     @PostMapping("/create")
     public ResponseEntity<?> createQuiz(@RequestBody QuizRequest quizDto) throws ExecutionException, InterruptedException {
         var result = quizzService.createQuiz(quizDto);
-        if (result) {
-            return new ResponseEntity<>("createdQuiz successfully", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("createdQuiz Failed", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -34,7 +31,7 @@ public class QuizzController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     public ResponseEntity<?> filterQuiz(@Valid @RequestBody BaseFilter req) {
         var result = quizzService.filter(req);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -43,10 +40,7 @@ public class QuizzController {
     @PostMapping("/update")
     public ResponseEntity<?> updateQuiz(@Valid @RequestBody QuizUpdateRequest quizDto) throws ExecutionException, InterruptedException {
         var result = quizzService.updateQuiz(quizDto);
-        if (result) {
-            return new ResponseEntity<>("updated quiz successfully", HttpStatus.CREATED);
-        }
-        return new ResponseEntity<>("updated quiz Failed", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @GetMapping("/question-ids")
     public ResponseEntity<?> getALlQuestionIdByQuizId(@RequestParam("id") String id) {
@@ -58,12 +52,8 @@ public class QuizzController {
     public ResponseEntity<?> importQuiz(@RequestParam("file") MultipartFile file) {
         try {
             QuizRequest quizRequest = quizzService.parseExcelFile(file);
-            boolean result = quizzService.createQuiz(quizRequest);
-            if (result) {
-                return new ResponseEntity<>("Quiz imported successfully", HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>("Quiz import failed", HttpStatus.BAD_REQUEST);
-            }
+            var result = quizzService.createQuiz(quizRequest);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Error processing file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

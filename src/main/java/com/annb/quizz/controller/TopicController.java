@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class TopicController {
     private final TopicService topicService;
 
-    @GetMapping("filter")
+    @PostMapping("filter")
     public ResponseEntity<?> getTopics(@RequestBody @Valid BaseFilter request) {
         var res = topicService.getTopics(request);
         return ResponseEntity.ok(res);

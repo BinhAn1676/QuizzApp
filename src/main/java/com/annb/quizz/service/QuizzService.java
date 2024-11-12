@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface QuizzService {
-    Boolean createQuiz(QuizRequest quizDto) throws ExecutionException, InterruptedException;
+    QuizResponse createQuiz(QuizRequest quizDto) throws ExecutionException, InterruptedException;
 
     QuizResponse getQuiz(String id);
 
     Page<QuizDto> filter(@Valid BaseFilter req);
 
-    Boolean updateQuiz(@Valid QuizUpdateRequest quizDto);
+    QuizResponse updateQuiz(@Valid QuizUpdateRequest quizDto);
 
     List<String> getQuestionIds(String id);
 

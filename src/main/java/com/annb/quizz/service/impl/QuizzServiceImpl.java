@@ -16,7 +16,6 @@ import com.annb.quizz.repository.QuizzRepository;
 import com.annb.quizz.repository.TopicRepository;
 import com.annb.quizz.service.QuizzService;
 import lombok.RequiredArgsConstructor;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,7 +42,7 @@ public class QuizzServiceImpl implements QuizzService {
 
     @Override
     @Transactional
-    public Boolean createQuiz(QuizRequest quizDto) {
+    public QuizResponse createQuiz(QuizRequest quizDto) {
         // Create and save the quiz
         var topic = topicRepository.findByCode(quizDto.getTopicCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Topic", "code", quizDto.getTopicCode()));
@@ -77,7 +76,14 @@ public class QuizzServiceImpl implements QuizzService {
                 answerRepository.save(answer);
             }
         }
-        return true;
+        QuizResponse response = new QuizResponse();
+        response.setId(quizSaved.getId());
+        response.setTitle(quiz.getTitle());
+        response.setId(quiz.getId());
+        response.setDescription(quiz.getDescription());
+        response.setTopicCode(quiz.getTopic().getCode());
+
+        return response;
     }
 
     @Override
@@ -130,7 +136,7 @@ public class QuizzServiceImpl implements QuizzService {
 
     @Override
     @Transactional
-    public Boolean updateQuiz(QuizUpdateRequest quizDto) {
+    public QuizResponse updateQuiz(QuizUpdateRequest quizDto) {
         var topic = topicRepository.findByCode(quizDto.getTopicCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Topic", "code", quizDto.getTopicCode()));
         Quizz quiz = quizzRepository.findById(quizDto.getId())
@@ -162,7 +168,14 @@ public class QuizzServiceImpl implements QuizzService {
                 answerRepository.save(answer);
             }
         }
-        return true;
+        QuizResponse response = new QuizResponse();
+        response.setId(quiz.getId());
+        response.setTitle(quiz.getTitle());
+        response.setId(quiz.getId());
+        response.setDescription(quiz.getDescription());
+        response.setTopicCode(quiz.getTopic().getCode());
+
+        return response;
     }
 
     @Override
