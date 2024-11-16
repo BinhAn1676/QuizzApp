@@ -34,11 +34,11 @@ public class ProjectSecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
         CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(corsConfig -> corsConfig.disable()/*configurationSource(new CorsConfigurationSource() {
+                .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:8080"));
+                        config.setAllowedOrigins(List.of("*"));
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -46,7 +46,7 @@ public class ProjectSecurityConfig {
                         config.setMaxAge(3600L);
                         return config;
                     }
-                })*/)
+                }))
                 .csrf(csrfConfig -> csrfConfig.disable()/*csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
                         .ignoringRequestMatchers("/quiz-room") // Exclude WebSocket path from CSRF
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())*/)
