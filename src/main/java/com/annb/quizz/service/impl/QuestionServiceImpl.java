@@ -11,6 +11,7 @@ import com.annb.quizz.repository.RoomRepository;
 import com.annb.quizz.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -108,6 +109,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    @Transactional
     public QuestionResponse getQuestionFromRoom(String roomId, String id) {
         var room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room", "id", roomId));
         var questionOptional = room.getQuiz().getQuestions().stream().filter(q -> q.getId().equals(id)).findFirst();
