@@ -27,4 +27,6 @@ public class Quizz extends BaseEntity{
     // OneToMany relationship to Question
     @OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Question> questions = new ArrayList<>();
+    @OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Note> notes = new ArrayList<>();
 }

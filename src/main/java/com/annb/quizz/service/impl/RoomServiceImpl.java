@@ -33,4 +33,14 @@ public class RoomServiceImpl implements RoomService {
         return response;
     }
 
+    @Override
+    public RoomResponse getByCode(String code) {
+        var room = roomRepository.findByCode(code).orElseThrow(() -> new ResourceNotFoundException("Room", "code", code));
+        var response = new RoomResponse();
+        response.setIsActive(room.getIsActive());
+        response.setCode(room.getCode());
+        response.setId(room.getId());
+        return response;
+    }
+
 }

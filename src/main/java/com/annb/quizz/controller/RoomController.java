@@ -16,4 +16,9 @@ public class RoomController {
         var room = roomService.createRoom(quizId);
         return ResponseEntity.ok(room);
     }
+
+    @GetMapping("/get-by-code/{code}")
+    public ResponseEntity<?> getRoomByCode(@PathVariable("code") String code) {
+        return ResponseEntity.ok(roomService.getByCode(code));
+    }
 }

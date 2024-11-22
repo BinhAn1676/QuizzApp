@@ -30,7 +30,7 @@ public class QuizzAttemptServiceImpl implements QuizzAttemptService {
     @Override
     @Transactional
     public QuizAttemptResponse createQuizLog(QuizAttemptRequest req) {
-        Quizz quiz = quizzRepository.findById(req.getId())
+        Quizz quiz = quizzRepository.findById(req.getQuizzId())
                 .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", req.getId()));
 
 // Tạo bản ghi QuizAttempt

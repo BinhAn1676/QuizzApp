@@ -32,4 +32,6 @@ public class Question extends BaseEntity{
     private List<Answer> answers = new ArrayList<>();
     @Column(name = "question_type")
     private Integer questionType;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Note> notes = new ArrayList<>();
 }

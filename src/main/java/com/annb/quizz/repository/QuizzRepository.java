@@ -23,6 +23,7 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
             "JOIN topic t ON q.topic_id = t.id " +
             "WHERE (:textSearch IS NULL OR q.description LIKE %:textSearch% " +
             "OR q.title LIKE %:textSearch% " +
+            "OR q.createdBy LIKE %:textSearch% " +
             "OR t.code LIKE %:textSearch% " +
             "OR t.title LIKE %:textSearch% " +
             "OR t.description LIKE %:textSearch%) " +

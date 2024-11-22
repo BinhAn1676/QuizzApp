@@ -17,6 +17,7 @@ public class Participant extends BaseEntity {
     private String id; // Unique participant ID
     private String username; // Username of the participant
     private Integer isActive; // Indicates if the participant is currently active
+    private Double score;
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room room; // The room that the participant is part of
