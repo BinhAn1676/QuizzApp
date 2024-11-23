@@ -1,6 +1,5 @@
-package com.annb.quizz.dto.response;
+package com.annb.quizz.dto.request;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantResponse {
-    private String id;
+public class ParticipantScoreRequest {
     private String username;
-    private Integer isActive;
     private Double score;
+    private String roomId;
 }
