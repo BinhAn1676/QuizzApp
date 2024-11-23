@@ -33,3 +33,7 @@ cloudinary:
   cloud_name: dudmseznd
   api_key: 977175684227516
   api_secret: WToDubaMSv5kOxfArypjrWC_qxA
+
+gemini:
+  api_url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+  api_key: AIzaSyAH4c0LdqGDcp8uxAu1JjYgbtLchopKNno
