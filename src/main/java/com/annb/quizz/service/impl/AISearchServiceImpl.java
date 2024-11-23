@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +25,8 @@ public class AISearchServiceImpl implements AISearchService {
 
     private final RestTemplate restTemplate;
 
-    public AISearchServiceImpl(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
     @Override
-    public String sendMessage(MessageRequest req) {
+    public GeminiResponse sendMessage(MessageRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -44,18 +41,16 @@ public class AISearchServiceImpl implements AISearchService {
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 GeminiResponse responseBody = response.getBody();
-                return "";
+
+                return responseBody;
             } else {
-                return "Server error";
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return "Server error";
+            return null;
         }
     }
 
-    @Override
-    public String sendMessageWithContext(MessageRequest req) {
-        return "";
-    }
+
 }

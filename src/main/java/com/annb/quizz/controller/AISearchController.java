@@ -23,9 +23,9 @@ public class AISearchController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping("/send-message-with-context")
+  /*  @PostMapping("/send-message-with-context")
     public ResponseEntity<?> sendMessageWithContext(@Valid @RequestBody MessageRequest msg) {
         var result = aiSearchService.sendMessageWithContext(msg);
         return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+    }*/
 }
