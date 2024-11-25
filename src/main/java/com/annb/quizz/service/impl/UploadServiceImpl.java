@@ -13,27 +13,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import static java.lang.String.join;
 
 @Service
 @RequiredArgsConstructor
 public class UploadServiceImpl implements UploadFileService {
+    private final Logger log = Logger.getLogger(UploadServiceImpl.class.getName());
     private final Cloudinary cloudinary;
 
     @Override
-    public String uploadImage(MultipartFile file) throws IOException {
-        assert file.getOriginalFilename() != null;
-        String publicValue = generatePublicValue(file.getOriginalFilename());
-        System.out.println("publicValue is: {" + publicValue + "}");
-        String extension = getFileName(file.getOriginalFilename())[1];
-        System.out.println("extension is: {" + extension + "}");
-        File fileUpload = convert(file);
-        System.out.println("fileUpload is: {" + fileUpload + "}");
-        cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
-        cleanDisk(fileUpload);
-        return cloudinary.url().generate(join(publicValue, ".", extension));
+    public String uploadImage(MultipartFile file) {
+        try{
+            assert file.getOriginalFilename() != null;
+            String publicValue = generatePublicValue(file.getOriginalFilename());
+            System.out.println("publicValue is: {" + publicValue + "}");
+            String extension = getFileName(file.getOriginalFilename())[1];
+            System.out.println("extension is: {" + extension + "}");
+            byte[] bytes = file.getBytes();
+            Map uploadResult = cloudinary.uploader().upload(
+                    bytes,
+                    ObjectUtils.asMap("public_id", publicValue)
+            );
+            System.out.println("UPLOAD RESULT " + uploadResult);
+            // Generate the URL
+            return cloudinary.url().generate(join(publicValue, ".", extension));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private File convert(MultipartFile file) throws IOException {

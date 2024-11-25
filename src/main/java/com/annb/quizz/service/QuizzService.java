@@ -25,4 +25,6 @@ public interface QuizzService {
     List<String> getQuestionIds(String id);
 
     QuizRequest parseExcelFile(MultipartFile file) throws IOException;
+
+    Boolean deleteById(String id);
 }

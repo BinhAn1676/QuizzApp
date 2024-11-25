@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mysql-container:
-    image: binhan21/mysql:v1
+    image: binhan21/mysql:v2
     container_name: mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
@@ -49,7 +49,7 @@ services:
         condition: service_healthy
 
   quizz:
-    image: binhan21/quizz-app:v1
+    image: binhan21/quiz-app:v2
     container_name: quiz-app
     ports:
       - "8080:8080"

@@ -248,4 +248,14 @@ public class QuizzServiceImpl implements QuizzService {
             throw new RuntimeException("Invalid file format. Please upload a valid Excel file (.xls or .xlsx).");
         }
     }
+
+    @Override
+    public Boolean deleteById(String id) {
+        var isExisted = quizzRepository.existsById(id);
+        if(isExisted){
+            quizzRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }

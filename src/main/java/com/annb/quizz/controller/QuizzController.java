@@ -42,6 +42,15 @@ public class QuizzController {
         var result = quizzService.updateQuiz(quizDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> updateQuiz(@PathVariable("id") String id) throws ExecutionException, InterruptedException {
+        var result = quizzService.deleteById(id);
+        if(result){
+            return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Failed to delete quiz", HttpStatus.BAD_REQUEST);
+    }
     @GetMapping("/question-ids")
     public ResponseEntity<?> getALlQuestionIdByQuizId(@RequestParam("id") String id) {
         var result = quizzService.getQuestionIds(id);

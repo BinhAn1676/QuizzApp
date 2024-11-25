@@ -19,14 +19,31 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
             "AND (:from IS NULL OR DATE(q.created_at) >= DATE(:from)) " +
             "AND (:to IS NULL OR DATE(q.created_at) <= DATE(:to))",
             nativeQuery = true)*/
-    @Query(value = "SELECT q.* FROM quizz q " +
+    /*@Query(value = "SELECT q.* FROM quizz q " +
             "JOIN topic t ON q.topic_id = t.id " +
             "WHERE (:textSearch IS NULL OR q.description LIKE %:textSearch% " +
             "OR q.title LIKE %:textSearch% " +
-            "OR q.createdBy LIKE %:textSearch% " +
+            "OR q.created_by LIKE %:textSearch% " +
             "OR t.code LIKE %:textSearch% " +
             "OR t.title LIKE %:textSearch% " +
             "OR t.description LIKE %:textSearch%) " +
+            "AND (:status IS NULL OR q.status = :status) " +
+            "AND (:from IS NULL OR DATE(q.created_at) >= DATE(:from)) " +
+            "AND (:to IS NULL OR DATE(q.created_at) <= DATE(:to))",
+            nativeQuery = true)
+    Page<Quizz> findFiltered(@Param("textSearch") String textSearch,
+                             @Param("from") LocalDateTime from,
+                             @Param("to") LocalDateTime to,
+                             @Param("status") Integer status,
+                             Pageable pageable);*/
+    @Query(value = "SELECT q.* FROM quizz q " +
+            "JOIN topic t ON q.topic_id = t.id " +
+            "WHERE (:textSearch IS NULL OR q.description LIKE CONCAT('%', :textSearch, '%') " +
+            "OR q.title LIKE CONCAT('%', :textSearch, '%') " +
+            "OR q.created_by LIKE CONCAT('%', :textSearch, '%') " +
+            "OR t.code LIKE CONCAT('%', :textSearch, '%') " +
+            "OR t.title LIKE CONCAT('%', :textSearch, '%') " +
+            "OR t.description LIKE CONCAT('%', :textSearch, '%')) " +
             "AND (:status IS NULL OR q.status = :status) " +
             "AND (:from IS NULL OR DATE(q.created_at) >= DATE(:from)) " +
             "AND (:to IS NULL OR DATE(q.created_at) <= DATE(:to))",
