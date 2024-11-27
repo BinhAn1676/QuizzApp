@@ -39,11 +39,9 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	// https://mvnrepository.com/artifact/org.apache.poi/poi
 	implementation 'org.apache.poi:poi:5.2.3'
 	implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
-//	implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -51,7 +49,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.39.0'
-	testImplementation 'org.springframework:spring-websocket-test'
+	//testImplementation 'org.springframework:spring-websocket-test'
 }
 
 tasks.named('test') {

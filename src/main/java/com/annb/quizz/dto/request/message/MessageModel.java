@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageRequest {
+public class MessageModel {
     private List<BaseContent> contents;
 }
