@@ -1,6 +1,7 @@
 package com.annb.quizz.service;
 
 import com.annb.quizz.dto.QuizDto;
+import com.annb.quizz.dto.QuizSuggestionDTO;
 import com.annb.quizz.dto.request.QuizRequest;
 import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.QuizUpdateRequest;
@@ -27,4 +28,6 @@ public interface QuizzService {
     QuizRequest parseExcelFile(MultipartFile file) throws IOException;
 
     Boolean deleteById(String id);
+
+    Page<QuizSuggestionDTO> getTopSuggestedQuizzes(BaseFilter limit);
 }

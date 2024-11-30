@@ -2,6 +2,7 @@ package com.annb.quizz.service.impl;
 
 import com.annb.quizz.constant.CommonConstant;
 import com.annb.quizz.dto.QuizDto;
+import com.annb.quizz.dto.QuizSuggestionDTO;
 import com.annb.quizz.dto.request.*;
 import com.annb.quizz.dto.response.AnswerResponse;
 import com.annb.quizz.dto.response.QuestionResponse;
@@ -17,9 +18,7 @@ import com.annb.quizz.repository.TopicRepository;
 import com.annb.quizz.service.QuizzService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -257,5 +256,30 @@ public class QuizzServiceImpl implements QuizzService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Page<QuizSuggestionDTO> getTopSuggestedQuizzes(BaseFilter req) {
+        Pageable pageable = PageRequest.of(
+                req.getPageNo(),
+                req.getPageSize()
+                );
+        var resultPage =  quizzRepository.findSuggestedQuizzes(pageable);
+        List<QuizSuggestionDTO> suggestions = resultPage.getContent().stream()
+                .map(row -> {
+                    QuizSuggestionDTO dto = new QuizSuggestionDTO();
+                    dto.setId((String) row[0]);
+                    dto.setTitle((String) row[1]);
+                    dto.setDescription((String) row[2]);
+                    dto.setStatus((Integer) row[3]);
+                    dto.setTopicId((String) row[4]);
+                    dto.setAverageRating(((Number) row[5]).doubleValue());
+                    dto.setTotalComments(((Number) row[6]).intValue());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        // Return Page of DTOs
+        return new PageImpl<>(suggestions, pageable, resultPage.getTotalElements());
     }
 }

@@ -1,11 +1,13 @@
 package com.annb.quizz.controller;
 
+import com.annb.quizz.dto.QuizSuggestionDTO;
 import com.annb.quizz.dto.request.QuizRequest;
 import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.QuizUpdateRequest;
 import com.annb.quizz.service.QuizzService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +68,11 @@ public class QuizzController {
         } catch (Exception e) {
             return new ResponseEntity<>("Error processing file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/top-suggestions")
+    public ResponseEntity<Page<QuizSuggestionDTO>> getTopQuizzes(@RequestBody BaseFilter request) {
+        Page<QuizSuggestionDTO> suggestions = quizzService.getTopSuggestedQuizzes(request);
+        return ResponseEntity.ok(suggestions);
     }
 }
