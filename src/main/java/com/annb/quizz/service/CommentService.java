@@ -7,4 +7,8 @@ public interface CommentService {
     CommentResponse create(CommentRequest commentRequest);
 
     CommentResponse addReply(CommentRequest commentRequest);
+
+    CommentResponse update(CommentRequest commentRequest);
+
+    Boolean deleteComment(String id);
 }

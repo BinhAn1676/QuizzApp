@@ -49,47 +49,6 @@ public class ReviewServiceImpl implements ReviewService {
         return response;
     }
 
-    /*@Override
-    public Page<ReviewWithCommentsResponse> getReviewsWithComments(BaseFilter request) {
-        Pageable pageable = PageRequest.of(request.getPageNo(), request.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
-        // Fetch reviews by quiz ID
-        Page<Review> reviews = reviewRepository.findByQuizzId(request.getTextSearch(), pageable);
-
-        // Map each review into a ReviewWithCommentsResponse
-        return reviews.map(review -> {
-            // Fetch comments for this review
-            List<CommentResponse> commentResponses = review.getComments().stream().map(this::mapCommentToResponse).toList();
-
-            // Create and return the response for each review
-            return new ReviewWithCommentsResponse(
-                    review.getId(),
-                    review.getUsername(),
-                    review.getRating(),
-                    review.getComment(),
-                    review.getCreatedBy(),
-                    review.getCreatedAt(),
-                    commentResponses
-            );
-        });
-    }
-
-    // Helper method to map comments, including replies
-    private CommentResponse mapCommentToResponse(Comment comment) {
-        List<CommentResponse> replyResponses = comment.getReplies().stream()
-                .map(this::mapCommentToResponse) // Recursive call for nested replies
-                .toList();
-
-        return new CommentResponse(
-                comment.getId(),
-                comment.getContent(),
-                comment.getUsername(),
-                comment.getParentComment() != null ? comment.getParentComment().getId() : null,
-                comment.getReview().getId(),
-                comment.getQuizz().getId(),
-                comment.getCreatedAt(),
-                replyResponses
-        );
-    }*/
     @Override
     public Page<ReviewWithCommentsResponse> getReviewsWithComments(BaseFilter request) {
         Pageable pageable = PageRequest.of(request.getPageNo(), request.getPageSize(), Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -114,6 +73,33 @@ public class ReviewServiceImpl implements ReviewService {
                     commentResponses
             );
         });
+    }
+
+    @Override
+    public ReviewResponse updateReview(ReviewRequest reviewRequest) {
+        var review = reviewRepository.findById(reviewRequest.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Review", "id", reviewRequest.getId()));
+        review.setComment(reviewRequest.getComment());
+        review.setRating(reviewRequest.getRating());
+
+        var saved =  reviewRepository.save(review);
+        var response = new ReviewResponse();
+        response.setId(saved.getId());
+        response.setUsername(saved.getUsername());
+        response.setComment(saved.getComment());
+        response.setQuizzId(saved.getQuizz().getId());
+        response.setRating(saved.getRating());
+        return response;
+    }
+
+    @Override
+    public Boolean deleteReview(String id) {
+        var isExisted = reviewRepository.existsById(id);
+        if(isExisted){
+            reviewRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     // Helper method to map comments, including replies

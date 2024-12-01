@@ -10,4 +10,8 @@ public interface ReviewService {
     ReviewResponse addReview(ReviewRequest reviewRequest);
 
     Page<ReviewWithCommentsResponse> getReviewsWithComments(BaseFilter request);
+
+    ReviewResponse updateReview(ReviewRequest reviewRequest);
+
+    Boolean deleteReview(String id);
 }

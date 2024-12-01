@@ -90,4 +90,32 @@ public class CommentServiceImpl implements CommentService {
         response.setCreatedAt(savedReply.getCreatedAt());
         return response;
     }
+
+    @Override
+    public CommentResponse update(CommentRequest commentRequest) {
+        var comment = commentRepository.findById(commentRequest.getCommentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentRequest.getParentCommentId()));
+        comment.setContent(commentRequest.getContent());
+        var savedReply = commentRepository.save(comment);
+        // Build response
+        CommentResponse response = new CommentResponse();
+        response.setId(savedReply.getId());
+        response.setUsername(savedReply.getUsername());
+        response.setContent(savedReply.getContent());
+        response.setParentCommentId(savedReply.getParentComment().getId());
+        response.setReviewId(savedReply.getReview().getId());
+        response.setQuizzId(savedReply.getQuizz().getId());
+        response.setCreatedAt(savedReply.getCreatedAt());
+        return response;
+    }
+
+    @Override
+    public Boolean deleteComment(String id) {
+        var isExisted = commentRepository.existsById(id);
+        if(isExisted){
+            commentRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }

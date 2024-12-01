@@ -21,14 +21,22 @@ public class ReviewController {
         return new ResponseEntity<>(reviewService.addReview(reviewRequest), HttpStatus.CREATED);
     }
 
-    /*@PostMapping("/reviews")
-    public ResponseEntity<Page<ReviewWithCommentsResponse>> getReviewsWithComments(
-            @RequestBody BaseFilter request) {
-        Page<ReviewWithCommentsResponse> reviews = reviewService.getReviewsWithComments(request);
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
-    }*/
 
-    @GetMapping("/reviews")
+    @PostMapping("/update")
+    public ResponseEntity<?> updateReview(@RequestBody ReviewRequest reviewRequest) {
+        return new ResponseEntity<>(reviewService.updateReview(reviewRequest), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReview(@PathVariable String id) {
+        var result = reviewService.deleteReview(id);
+        if(result){
+            return ResponseEntity.ok("Deleted Successfullu");
+        }
+        return ResponseEntity.ok("Failed to delete review");
+    }
+
+    @PostMapping("/filter")
     public ResponseEntity<Page<ReviewWithCommentsResponse>> getReviewsWithComments(@RequestBody BaseFilter req) {
         Page<ReviewWithCommentsResponse> reviews = reviewService.getReviewsWithComments(req);
         return ResponseEntity.ok(reviews);
