@@ -16,4 +16,5 @@ public class NoteResponse {
     private String note;
     private String quizzId;
     private String questionId;
+    private String title;
 }

@@ -40,6 +40,8 @@ public class RoomServiceImpl implements RoomService {
         response.setIsActive(room.getIsActive());
         response.setCode(room.getCode());
         response.setId(room.getId());
+        response.setQuizzId(room.getQuiz().getId());
+        response.setCreatedBy(room.getCreatedBy());
         return response;
     }
 

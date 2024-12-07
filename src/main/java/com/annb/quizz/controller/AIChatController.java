@@ -1,5 +1,6 @@
 package com.annb.quizz.controller;
 
+import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.message.MessageModel;
 import com.annb.quizz.service.AIChatService;
 import jakarta.validation.Valid;
@@ -20,9 +21,9 @@ public class AIChatController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/get-message")
-    public ResponseEntity<?> getMessage(@RequestParam String username) {
-        return ResponseEntity.ok(aiChatService.getMessage(username));
+    @PostMapping("/get-message")
+    public ResponseEntity<?> getMessage(@RequestBody BaseFilter req) {
+        return ResponseEntity.ok(aiChatService.getMessage(req));
     }
 
     @PostMapping("/save-message")

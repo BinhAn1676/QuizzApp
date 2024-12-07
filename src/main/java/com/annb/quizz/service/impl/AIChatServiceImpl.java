@@ -1,5 +1,6 @@
 package com.annb.quizz.service.impl;
 
+import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.message.BaseContent;
 import com.annb.quizz.dto.request.message.BasePart;
 import com.annb.quizz.dto.request.message.MessageModel;
@@ -9,6 +10,9 @@ import com.annb.quizz.repository.ChatBotLogRepository;
 import com.annb.quizz.service.AIChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,8 +64,8 @@ public class AIChatServiceImpl implements AIChatService {
     }
 
     @Override
-    public MessageModel getMessage(String username) {
-        List<ChatBotLog> chatLogs =chatBotLogRepository.findAllByCreatedByOrderByCreatedAt(username);
+    public Page<BaseContent> getMessage(BaseFilter req) {
+       /* List<ChatBotLog> chatLogs =chatBotLogRepository.findAllByCreatedByOrderByCreatedAt(username);
         var response = chatLogs.stream().map(item ->{
             var baseContent = new BaseContent();
             baseContent.setRole(item.getRole());
@@ -71,7 +74,20 @@ public class AIChatServiceImpl implements AIChatService {
             baseContent.setParts(Collections.singletonList(basePart));
             return baseContent;
         }).toList();
-        return new MessageModel(response);
+        return new MessageModel(response);*/
+        // Fetch paginated data from the repository
+        Pageable pageable = PageRequest.of(req.getPageNo(),req.getPageSize());
+        Page<ChatBotLog> chatLogs = chatBotLogRepository.findAllByCreatedByOrderByCreatedAt(req.getTextSearch(), pageable);
+
+        // Map ChatBotLog to BaseContent and return a new Page
+        return chatLogs.map(item -> {
+            var baseContent = new BaseContent();
+            baseContent.setRole(item.getRole());
+            var basePart = new BasePart();
+            basePart.setText(item.getMessage());
+            baseContent.setParts(Collections.singletonList(basePart));
+            return baseContent;
+        });
     }
 
     @Override

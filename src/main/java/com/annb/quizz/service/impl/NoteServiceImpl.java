@@ -42,6 +42,7 @@ public class NoteServiceImpl implements NoteService {
             question.ifPresent(note::setQuestion);
 
             note.setNote(request.getNote());
+            note.setTitle(request.getTitle());
             note.setId(UUID.randomUUID().toString().replace("-", ""));
 
             // Save the note
@@ -90,7 +91,14 @@ public class NoteServiceImpl implements NoteService {
             }
 
             if (StringUtils.hasText(request.getUsername())) {
-                predicates.add(criteriaBuilder.equal(root.get("username"), request.getUsername()));
+                predicates.add(criteriaBuilder.equal(root.get("createdBy"), request.getUsername()));
+            }
+            if (StringUtils.hasText(request.getTextSearch())) {
+                String searchValue = "%" + request.getTextSearch() + "%";
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("title"), searchValue),
+                        criteriaBuilder.like(root.get("note"), searchValue)
+                ));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -120,6 +128,9 @@ public class NoteServiceImpl implements NoteService {
             if (request.getNote() != null) {
                 note.setNote(request.getNote());
             }
+            if(request.getTitle() != null) {
+                note.setTitle(request.getTitle());
+            }
             if (request.getQuizzId() != null) {
                 quizzRepository.findById(request.getQuizzId()).ifPresent(note::setQuizz);
             }
@@ -138,6 +149,7 @@ public class NoteServiceImpl implements NoteService {
                     response.setId(updatedNote.getId());
                     response.setNote(updatedNote.getNote());
                     response.setCreatedBy(updatedNote.getCreatedBy());
+                    response.setTitle(updatedNote.getTitle());
                     response.setCreatedDate(updatedNote.getCreatedAt());
                     if (updatedNote.getQuestion() != null) {
                         response.setQuestionId(updatedNote.getQuestion().getId());
@@ -167,7 +179,7 @@ public class NoteServiceImpl implements NoteService {
         response.setNote(note.getNote());
         response.setCreatedBy(note.getCreatedBy());
         response.setCreatedDate(note.getCreatedAt());
-
+        response.setTitle(note.getTitle());
         if (note.getQuestion() != null) {
             response.setQuestionId(note.getQuestion().getId());
         }

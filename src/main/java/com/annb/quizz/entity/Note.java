@@ -16,6 +16,7 @@ public class Note extends BaseEntity{
     @Id
     private String id;
     private String note;
+    private String title;
     @ManyToOne
     @JoinColumn(name = "quizz_id")
     private Quizz quizz;

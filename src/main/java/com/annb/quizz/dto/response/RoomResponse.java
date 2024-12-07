@@ -16,4 +16,7 @@ public class RoomResponse {
     private String id; // Unique room ID
     private String code; // Code for users to join the room
     private Boolean isActive; // Indicates if the room is active
+    private String quizzId;
+    private String createdBy;
+
 }

@@ -1,5 +1,6 @@
 package com.annb.quizz.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,5 +19,6 @@ public class ChatBotLog extends BaseEntity{
     @Id
     private String id;
     private String role;
+    @Column(name = "message",columnDefinition = "LONGTEXT")
     private String message;
 }
