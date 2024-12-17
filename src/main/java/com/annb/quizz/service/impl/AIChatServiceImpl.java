@@ -77,7 +77,7 @@ public class AIChatServiceImpl implements AIChatService {
         return new MessageModel(response);*/
         // Fetch paginated data from the repository
         Pageable pageable = PageRequest.of(req.getPageNo(),req.getPageSize());
-        Page<ChatBotLog> chatLogs = chatBotLogRepository.findAllByCreatedByOrderByCreatedAt(req.getTextSearch(), pageable);
+        Page<ChatBotLog> chatLogs = chatBotLogRepository.findAllByCreatedByOrderByCreatedAtDesc(req.getTextSearch(), pageable);
 
         // Map ChatBotLog to BaseContent and return a new Page
         return chatLogs.map(item -> {

@@ -25,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,7 +130,7 @@ public class QuizzServiceImpl implements QuizzService {
         });
     }
 
-    @Override
+    /*@Override
     @Transactional
     public QuizResponse updateQuiz(QuizUpdateRequest quizDto) {
         var topic = topicRepository.findByCode(quizDto.getTopicCode())
@@ -175,7 +172,89 @@ public class QuizzServiceImpl implements QuizzService {
         response.setTopicCode(quiz.getTopic().getCode());
 
         return response;
+    }*/
+    @Override
+    @Transactional
+    public QuizResponse updateQuiz(QuizUpdateRequest quizDto) {
+        var topic = topicRepository.findByCode(quizDto.getTopicCode())
+                .orElseThrow(() -> new ResourceNotFoundException("Topic", "code", quizDto.getTopicCode()));
+
+        Quizz quiz = quizzRepository.findById(quizDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizDto.getId()));
+
+        // Update basic quiz details
+        quiz.setTitle(quizDto.getTitle());
+        quiz.setDescription(quizDto.getDescription());
+        quiz.setStatus(Objects.equals(quizDto.getStatus(), CommonConstant.Status.ACTIVE)
+                ? CommonConstant.Status.ACTIVE : CommonConstant.Status.INACTIVE);
+        quiz.setTopic(topic);
+
+        var quizSaved = quizzRepository.saveAndFlush(quiz); // Persist quiz
+
+        // Fetch existing questions for the quiz
+        Map<String, Question> existingQuestionsMap = questionRepository.findByQuizzId(quiz.getId())
+                .stream().collect(Collectors.toMap(Question::getId, question -> question));
+
+        // Update or create questions
+        for (QuestionRequest questionDto : quizDto.getQuestions()) {
+            Question question;
+
+            if (questionDto.getId() != null && existingQuestionsMap.containsKey(questionDto.getId())) {
+                // Update existing question
+                question = existingQuestionsMap.get(questionDto.getId());
+            } else {
+                // Create new question
+                question = new Question();
+                question.setId(UUID.randomUUID().toString().replace("-", ""));
+                question.setQuizz(quizSaved); // Associate with quiz
+            }
+
+            // Set fields for the question
+            question.setContent(questionDto.getContent());
+            question.setTime(questionDto.getTime());
+            question.setPoint(questionDto.getPoint());
+            question.setImageUrl(questionDto.getImageUrl());
+            question.setQuestionType(questionDto.getQuestionType() == 1
+                    ? CommonConstant.QuestionType.MULTIPLE_CHOICE
+                    : CommonConstant.QuestionType.WRITE_CHOICE);
+
+            var savedQuestion = questionRepository.save(question);
+
+            // Handle answers
+            Map<String, Answer> existingAnswersMap = answerRepository.findByQuestionId(savedQuestion.getId())
+                    .stream().collect(Collectors.toMap(Answer::getId, answer -> answer));
+
+            for (AnswerRequest answerDto : questionDto.getAnswers()) {
+                Answer answer;
+
+                if (answerDto.getId() != null && existingAnswersMap.containsKey(answerDto.getId())) {
+                    // Update existing answer
+                    answer = existingAnswersMap.get(answerDto.getId());
+                } else {
+                    // Create new answer
+                    answer = new Answer();
+                    answer.setId(UUID.randomUUID().toString().replace("-", ""));
+                    answer.setQuestion(savedQuestion); // Associate with question
+                }
+
+                // Set fields for the answer
+                answer.setContent(answerDto.getContent());
+                answer.setIsCorrect(answerDto.getIsCorrect());
+
+                answerRepository.save(answer);
+            }
+        }
+
+        // Prepare response
+        QuizResponse response = new QuizResponse();
+        response.setId(quiz.getId());
+        response.setTitle(quiz.getTitle());
+        response.setDescription(quiz.getDescription());
+        response.setTopicCode(quiz.getTopic().getCode());
+
+        return response;
     }
+
 
     @Override
     public List<String> getQuestionIds(String id) {

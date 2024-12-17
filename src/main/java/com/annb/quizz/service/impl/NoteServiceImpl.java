@@ -54,7 +54,7 @@ public class NoteServiceImpl implements NoteService {
             response.setNote(saved.getNote());
             response.setCreatedBy(saved.getCreatedBy());
             response.setCreatedDate(saved.getCreatedAt());
-
+            response.setTitle(saved.getTitle());
             if (!ObjectUtils.isEmpty(saved.getQuestion())) {
                 response.setQuestionId(saved.getQuestion().getId());
             }

@@ -12,4 +12,5 @@ import java.util.List;
 public interface ChatBotLogRepository  extends JpaRepository<ChatBotLog, String> {
     List<ChatBotLog> findAllByCreatedByOrderByCreatedAt(String username);
     Page<ChatBotLog> findAllByCreatedByOrderByCreatedAt(String username, Pageable pageable);
+    Page<ChatBotLog> findAllByCreatedByOrderByCreatedAtDesc(String username, Pageable pageable);
 }

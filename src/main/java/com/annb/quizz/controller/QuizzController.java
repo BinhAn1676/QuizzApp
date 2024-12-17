@@ -70,7 +70,7 @@ public class QuizzController {
         }
     }
 
-    @GetMapping("/top-suggestions")
+    @PostMapping("/top-suggestions")
     public ResponseEntity<Page<QuizSuggestionDTO>> getTopQuizzes(@RequestBody BaseFilter request) {
         Page<QuizSuggestionDTO> suggestions = quizzService.getTopSuggestedQuizzes(request);
         return ResponseEntity.ok(suggestions);

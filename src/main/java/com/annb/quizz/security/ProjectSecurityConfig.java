@@ -53,6 +53,7 @@ public class ProjectSecurityConfig {
                 //.addFilterAfter(new com.annb.quizz.security.CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
                 .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers("/quiz-room").permitAll()
                         .anyRequest().authenticated());
         http.oauth2ResourceServer(rsc -> rsc.jwt(jwtConfigurer ->
                 jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
