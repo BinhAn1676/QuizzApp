@@ -65,7 +65,14 @@ services:
         condition: service_healthy
     networks:
       - quiz-network
-    restart: on-failure
+
+  frontend:
+    image: nhatbontot/quizz-app-frontend
+    container_name: quiz-frontend
+    ports:
+      - "4200:4200"
+    networks:
+      - quiz-network
 
 networks:
   quiz-network:
