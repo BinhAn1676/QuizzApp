@@ -1,6 +1,7 @@
 package com.annb.quizz.controller;
 
 import com.annb.quizz.dto.QuizSuggestionDTO;
+import com.annb.quizz.dto.request.QuizGenerateRequest;
 import com.annb.quizz.dto.request.QuizRequest;
 import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.QuizUpdateRequest;
@@ -74,5 +75,10 @@ public class QuizzController {
     public ResponseEntity<Page<QuizSuggestionDTO>> getTopQuizzes(@RequestBody BaseFilter request) {
         Page<QuizSuggestionDTO> suggestions = quizzService.getTopSuggestedQuizzes(request);
         return ResponseEntity.ok(suggestions);
+    }
+
+    @PostMapping("/generate-quiz")
+    public ResponseEntity<?> generateQuiz(@Valid @RequestBody QuizGenerateRequest request) {
+        return ResponseEntity.ok(quizzService.generateByAI(request));
     }
 }

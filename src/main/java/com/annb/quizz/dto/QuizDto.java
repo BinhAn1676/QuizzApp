@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -18,5 +19,13 @@ public class QuizDto {
     private String topicCode;
     private String description;
     private Integer status;
+    private String createdBy;
+    private String imageUrl;
+    private Long reviewCount;    // Number of reviews
+    private Long questionCount;  // Number of questions
+    private Double averageRating; // Average rating
+    private LocalDateTime createdAt;
+    private String updatedBy;
+    private LocalDateTime updatedAt;
     private List<QuestionResponse> questions;
 }

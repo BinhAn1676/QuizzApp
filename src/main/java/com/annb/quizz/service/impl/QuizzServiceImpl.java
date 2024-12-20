@@ -4,9 +4,15 @@ import com.annb.quizz.constant.CommonConstant;
 import com.annb.quizz.dto.QuizDto;
 import com.annb.quizz.dto.QuizSuggestionDTO;
 import com.annb.quizz.dto.request.*;
+import com.annb.quizz.dto.request.message.BaseContent;
+import com.annb.quizz.dto.request.message.BasePart;
+import com.annb.quizz.dto.request.message.MessageModel;
 import com.annb.quizz.dto.response.AnswerResponse;
 import com.annb.quizz.dto.response.QuestionResponse;
 import com.annb.quizz.dto.response.QuizResponse;
+import com.annb.quizz.dto.response.gemini.Candidate;
+import com.annb.quizz.dto.response.gemini.Content;
+import com.annb.quizz.dto.response.gemini.GeminiResponse;
 import com.annb.quizz.entity.Answer;
 import com.annb.quizz.entity.Question;
 import com.annb.quizz.entity.Quizz;
@@ -15,9 +21,13 @@ import com.annb.quizz.repository.AnswerRepository;
 import com.annb.quizz.repository.QuestionRepository;
 import com.annb.quizz.repository.QuizzRepository;
 import com.annb.quizz.repository.TopicRepository;
+import com.annb.quizz.service.AIChatService;
 import com.annb.quizz.service.QuizzService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +46,7 @@ public class QuizzServiceImpl implements QuizzService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final TopicRepository topicRepository;
-
+    private final AIChatService aiChatService;
     @Override
     @Transactional
     public QuizResponse createQuiz(QuizRequest quizDto) {
@@ -48,6 +59,7 @@ public class QuizzServiceImpl implements QuizzService {
         quiz.setDescription(quizDto.getDescription());
         quiz.setStatus(CommonConstant.Status.ACTIVE);
         quiz.setTopic(topic);
+        quiz.setImageUrl(quizDto.getImageUrl());
         var quizSaved = quizzRepository.saveAndFlush(quiz); // Ensure quiz is persisted
 
         // Loop through each question and save it
@@ -76,9 +88,10 @@ public class QuizzServiceImpl implements QuizzService {
         response.setId(quizSaved.getId());
         response.setTitle(quiz.getTitle());
         response.setId(quiz.getId());
+        response.setImageUrl(quiz.getImageUrl());
         response.setDescription(quiz.getDescription());
         response.setTopicCode(quiz.getTopic().getCode());
-
+        response.setCreatedBy(quiz.getCreatedBy());
         return response;
     }
 
@@ -88,8 +101,10 @@ public class QuizzServiceImpl implements QuizzService {
         QuizResponse response = new QuizResponse();
         response.setTitle(quiz.getTitle());
         response.setId(quiz.getId());
+        response.setImageUrl(quiz.getImageUrl());
         response.setDescription(quiz.getDescription());
         response.setTopicCode(quiz.getTopic().getCode());
+        response.setCreatedBy(quiz.getCreatedBy());
         response.setQuestions(
                 quiz.getQuestions().stream().map(question -> {
                     var questionDto = new QuestionResponse();
@@ -115,64 +130,63 @@ public class QuizzServiceImpl implements QuizzService {
         return response;
     }
 
+
+    /*@Override
+    public Page<QuizDto> filter(BaseFilter req) {
+        Pageable pageable = PageRequest.of(req.getPageNo(), req.getPageSize());
+        var quizzes = quizzRepository.findFilteredWithStats(req.getTextSearch(), req.getFrom(), req.getTo(), req.getStatus(), pageable);
+
+        return quizzes.map(record -> {
+            // Extract fields from the Object[] array
+            String quizId = (String) record[0];
+            LocalDateTime createdAt = record[1] != null
+                    ? ((java.sql.Timestamp) record[1]).toLocalDateTime()
+                    : null;
+            String createdBy = (String) record[2];
+            LocalDateTime updatedAt = record[3] != null
+                    ? ((java.sql.Timestamp) record[1]).toLocalDateTime()
+                    : null;
+            String updatedBy = (String) record[4];
+            String description = (String) record[5];
+            Integer status = (Integer) record[6];
+            String title = (String) record[7];
+            String topicId = (String) record[8];  // Assuming topic_id as a String
+            String imageUrl = (String) record[9];
+            Long reviewCount = ((Number) record[10]).longValue();
+            Long questionCount = ((Number) record[11]).longValue();
+            Double averageRating = record[12] != null ? ((Number) record[12]).doubleValue() : 0.0;
+
+            // Manually map to QuizDto
+            QuizDto dto = new QuizDto();
+            dto.setId(quizId);
+            dto.setUpdatedAt(updatedAt);
+            dto.setUpdatedBy(updatedBy);
+            dto.setCreatedAt(createdAt);
+            dto.setImageUrl(imageUrl);
+            dto.setCreatedBy(createdBy);
+            dto.setDescription(description);
+            dto.setStatus(status);
+            dto.setTitle(title);
+            dto.setTopicCode(topicId);
+            dto.setReviewCount(reviewCount);
+            dto.setQuestionCount(questionCount);
+            dto.setAverageRating(averageRating);
+
+            return dto;
+        });
+    }*/
     @Override
     public Page<QuizDto> filter(BaseFilter req) {
         Pageable pageable = PageRequest.of(req.getPageNo(), req.getPageSize());
-        var quizzes =  quizzRepository.findFiltered(req.getTextSearch(), req.getFrom(), req.getTo(),req.getStatus(), pageable);
-        return quizzes.map(quiz -> {
+        var projections = quizzRepository.findFilteredWithStatsV2(req.getTextSearch(), req.getFrom(), req.getTo(), req.getStatus(), pageable);
+
+        return projections.map(projection -> {
             QuizDto dto = new QuizDto();
-            dto.setId(quiz.getId());
-            dto.setTitle(quiz.getTitle());
-            dto.setTopicCode(quiz.getTopic().getCode());
-            dto.setDescription(quiz.getDescription());
-            dto.setStatus(quiz.getStatus());
+            BeanUtils.copyProperties(projection, dto);
             return dto;
         });
     }
 
-    /*@Override
-    @Transactional
-    public QuizResponse updateQuiz(QuizUpdateRequest quizDto) {
-        var topic = topicRepository.findByCode(quizDto.getTopicCode())
-                .orElseThrow(() -> new ResourceNotFoundException("Topic", "code", quizDto.getTopicCode()));
-        Quizz quiz = quizzRepository.findById(quizDto.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Quiz", "id", quizDto.getId()));
-        quiz.setTitle(quizDto.getTitle());
-        quiz.setDescription(quizDto.getDescription());
-        quiz.setStatus(Objects.equals(quizDto.getStatus(), CommonConstant.Status.ACTIVE) ? CommonConstant.Status.ACTIVE : CommonConstant.Status.INACTIVE);
-        quiz.setTopic(topic);
-        var quizSaved = quizzRepository.saveAndFlush(quiz); // Ensure quiz is persisted
-        // Loop through each question and save it
-        for (QuestionRequest questionDto : quizDto.getQuestions()) {
-            Question question = new Question();
-            question.setId(UUID.randomUUID().toString().replace("-", ""));
-            question.setContent(questionDto.getContent());
-            question.setQuizz(quizSaved); // Associate quiz with question
-            question.setTime(questionDto.getTime());
-            question.setPoint(questionDto.getPoint());
-            question.setImageUrl(questionDto.getImageUrl());
-            question.setQuestionType(questionDto.getQuestionType() == 1 ? CommonConstant.QuestionType.MULTIPLE_CHOICE : CommonConstant.QuestionType.WRITE_CHOICE);
-            var questionSaved = questionRepository.save(question);
-
-            // Save answers corresponding to the question
-            for (AnswerRequest answerDto : questionDto.getAnswers()) {
-                Answer answer = new Answer();
-                answer.setId(UUID.randomUUID().toString().replace("-", ""));
-                answer.setContent(answerDto.getContent());
-                answer.setIsCorrect(answerDto.getIsCorrect());
-                answer.setQuestion(questionSaved); // Associate answer with question
-                answerRepository.save(answer);
-            }
-        }
-        QuizResponse response = new QuizResponse();
-        response.setId(quiz.getId());
-        response.setTitle(quiz.getTitle());
-        response.setId(quiz.getId());
-        response.setDescription(quiz.getDescription());
-        response.setTopicCode(quiz.getTopic().getCode());
-
-        return response;
-    }*/
     @Override
     @Transactional
     public QuizResponse updateQuiz(QuizUpdateRequest quizDto) {
@@ -188,7 +202,7 @@ public class QuizzServiceImpl implements QuizzService {
         quiz.setStatus(Objects.equals(quizDto.getStatus(), CommonConstant.Status.ACTIVE)
                 ? CommonConstant.Status.ACTIVE : CommonConstant.Status.INACTIVE);
         quiz.setTopic(topic);
-
+        quiz.setImageUrl(quizDto.getImageUrl());
         var quizSaved = quizzRepository.saveAndFlush(quiz); // Persist quiz
 
         // Fetch existing questions for the quiz
@@ -251,7 +265,7 @@ public class QuizzServiceImpl implements QuizzService {
         response.setTitle(quiz.getTitle());
         response.setDescription(quiz.getDescription());
         response.setTopicCode(quiz.getTopic().getCode());
-
+        response.setImageUrl(quiz.getImageUrl());
         return response;
     }
 
@@ -361,4 +375,74 @@ public class QuizzServiceImpl implements QuizzService {
         // Return Page of DTOs
         return new PageImpl<>(suggestions, pageable, resultPage.getTotalElements());
     }
+
+    @Override
+    public QuizResponse generateByAI(QuizGenerateRequest request) {
+        // Create the prompt for the Gemini API
+        String prompt = String.format("Tạo bộ câu hỏi %d câu về chủ đề '%s'. Format JSON chi tiết như sau: %s",
+                request.getNumberOfQuestions(), request.getPrompt(), getExpectedJsonFormat());
+
+        // Prepare the message for the Gemini API
+        MessageModel message = new MessageModel();
+        BasePart basePart = new BasePart(prompt);
+        BaseContent baseContent = new BaseContent("user", List.of(basePart));
+        message.setContents(List.of(baseContent));
+
+        // Call the Gemini API
+        GeminiResponse geminiResponse = aiChatService.sendMessage(message);
+
+        // Validate response
+        if (geminiResponse == null || geminiResponse.getCandidates() == null || geminiResponse.getCandidates().isEmpty()) {
+            throw new RuntimeException("Không nhận được phản hồi hợp lệ từ Gemini API. Vui lòng thử lại");
+        }
+
+        // Convert GeminiResponse to QuizResponse
+        return convertGeminiResponseToQuiz(request, geminiResponse);
+    }
+
+    private String getExpectedJsonFormat() {
+        return "{ \"title\": \"...\", \"topicCode\": \"...\", \"description\": \"...\", \"questions\": [ { \"content\": \"...\", \"questionType\": 1, \"answers\": [ { \"content\": \"...\", \"isCorrect\": true } ] } ] }";
+    }
+
+    private QuizResponse convertGeminiResponseToQuiz(QuizGenerateRequest request, GeminiResponse geminiResponse) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            // Extract text from the first candidate's first part
+            List<Candidate> candidates = geminiResponse.getCandidates();
+            if (candidates.isEmpty() || candidates.get(0).getContent().getParts().isEmpty()) {
+                throw new RuntimeException("Không có phần nội dung hợp lệ từ Gemini API.");
+            }
+
+            String geminiContent = candidates.get(0).getContent().getParts().get(0).getText();
+
+            // Clean the JSON string
+            String cleanedJson = cleanJsonString(geminiContent);
+
+            // Map the content to QuizResponse
+            QuizResponse quizResponse = mapper.readValue(cleanedJson, QuizResponse.class);
+
+            // Set the topicCode from the request
+            quizResponse.setTopicCode(request.getTopicCode());
+
+            return quizResponse;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Lỗi chuyển đổi phản hồi từ Gemini API.");
+        }
+    }
+
+    // Helper method to clean the JSON string
+    private String cleanJsonString(String rawJson) {
+        if (rawJson.startsWith("```json")) {
+            rawJson = rawJson.substring(7); // Remove the initial ```json
+        }
+        if (rawJson.endsWith("```")) {
+            rawJson = rawJson.substring(0, rawJson.length() - 3); // Remove the ending ```
+        }
+        return rawJson.trim(); // Trim any leading/trailing whitespace
+    }
+
+
 }

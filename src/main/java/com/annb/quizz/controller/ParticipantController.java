@@ -19,6 +19,11 @@ public class ParticipantController {
         var participant = participantService.joinRoom(roomCode, username);
         return ResponseEntity.ok(participant);
     }
+    @PostMapping("/leave")
+    public ResponseEntity<?> leaveRoom(@RequestParam String roomCode, @RequestParam String username) {
+        var participant = participantService.leaveRoom(roomCode, username);
+        return ResponseEntity.ok(participant);
+    }
 
     @PostMapping("/save-score")
     public ResponseEntity<?> saveScore(@RequestBody ParticipantScoreRequest request) {

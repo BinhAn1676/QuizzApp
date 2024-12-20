@@ -27,4 +27,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, String
                              @Param("roomId") String roomId,
                              Pageable pageable);
 
+    Optional<Participant> findByUsername(String username);
+
 }

@@ -2,6 +2,7 @@ package com.annb.quizz.service;
 
 import com.annb.quizz.dto.QuizDto;
 import com.annb.quizz.dto.QuizSuggestionDTO;
+import com.annb.quizz.dto.request.QuizGenerateRequest;
 import com.annb.quizz.dto.request.QuizRequest;
 import com.annb.quizz.dto.request.BaseFilter;
 import com.annb.quizz.dto.request.QuizUpdateRequest;
@@ -30,4 +31,6 @@ public interface QuizzService {
     Boolean deleteById(String id);
 
     Page<QuizSuggestionDTO> getTopSuggestedQuizzes(BaseFilter limit);
+
+    QuizResponse  generateByAI(@Valid QuizGenerateRequest request);
 }

@@ -33,6 +33,17 @@ public class ParticipantServiceImpl implements ParticipantService {
     public ParticipantResponse joinRoom(String roomCode, String username) {
         Room room = roomRepository.findByCode(roomCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Code", roomCode));
+        var participantOptional = participantRepository.findByUsername(username);
+        if(participantOptional.isPresent()) {
+            Participant participant = participantOptional.get();
+            participant.setIsActive(CommonConstant.Status.ACTIVE);
+            var saved =  participantRepository.save(participant);
+            var res = new ParticipantResponse();
+            res.setId(saved.getId());
+            res.setUsername(saved.getUsername());
+            res.setIsActive(saved.getIsActive());
+            return res;
+        }
         Participant participant = new Participant();
         participant.setId(UUID.randomUUID().toString().replace("-",""));
         participant.setUsername(username);
@@ -76,5 +87,20 @@ public class ParticipantServiceImpl implements ParticipantService {
             dto.setCreatedAt(item.getCreatedAt());
             return dto;
         });
+    }
+
+    @Override
+    public ParticipantResponse leaveRoom(String roomCode, String username) {
+        Room room = roomRepository.findByCode(roomCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "Code", roomCode));
+        Participant participant = participantRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Participant", "username", username));
+        participant.setIsActive(CommonConstant.Status.INACTIVE);
+        var saved =  participantRepository.save(participant);
+        var res = new ParticipantResponse();
+        res.setId(saved.getId());
+        res.setUsername(saved.getUsername());
+        res.setIsActive(saved.getIsActive());
+        return res;
     }
 }

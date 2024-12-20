@@ -14,9 +14,11 @@ import java.util.List;
 public class QuizResponse {
     private String id;
     private String title;
+    private String imageUrl;
     @NotNull(message = "topic code cant be null")
     @NotEmpty(message = "topic code cant be empty")
     private String topicCode;
     private String description;
+    private String createdBy;
     private List<QuestionResponse> questions;
 }

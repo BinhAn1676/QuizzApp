@@ -13,4 +13,6 @@ public interface ParticipantService {
     ParticipantResponse saveScore(ParticipantScoreRequest request);
 
     Page<ParticipanPageResponse> getScore(ParticipantScorePageRequest request);
+
+    ParticipantResponse leaveRoom(String roomCode, String username);
 }

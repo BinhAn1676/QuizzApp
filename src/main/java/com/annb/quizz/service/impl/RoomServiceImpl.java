@@ -1,6 +1,8 @@
 package com.annb.quizz.service.impl;
 
+import com.annb.quizz.dto.response.ParticipantResponse;
 import com.annb.quizz.dto.response.RoomResponse;
+import com.annb.quizz.entity.Participant;
 import com.annb.quizz.entity.Room;
 import com.annb.quizz.exception.ResourceNotFoundException;
 import com.annb.quizz.repository.QuizzRepository;
@@ -8,8 +10,11 @@ import com.annb.quizz.repository.RoomRepository;
 import com.annb.quizz.service.RoomService;
 import com.annb.quizz.util.Utils;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,6 +22,7 @@ import java.util.UUID;
 public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final QuizzRepository quizzRepository;
+
     @Override
     public RoomResponse createRoom(String quizId) {
         Room room = new Room();
@@ -43,6 +49,21 @@ public class RoomServiceImpl implements RoomService {
         response.setQuizzId(room.getQuiz().getId());
         response.setCreatedBy(room.getCreatedBy());
         return response;
+    }
+
+    @Override
+    public List<ParticipantResponse> getParticipants(String roomCode) {
+        var room = roomRepository.findByCode(roomCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "code", roomCode));
+        return  room.getParticipants().stream()
+                .map((element) -> {
+                    var participantResponse = new ParticipantResponse();
+                    participantResponse.setId(element.getId());
+                    participantResponse.setIsActive(element.getIsActive());
+                    participantResponse.setUsername(element.getUsername());
+                    participantResponse.setScore(element.getScore());
+                    return participantResponse;
+                }).toList();
     }
 
 }

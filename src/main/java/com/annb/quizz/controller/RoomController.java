@@ -21,4 +21,9 @@ public class RoomController {
     public ResponseEntity<?> getRoomByCode(@PathVariable("code") String code) {
         return ResponseEntity.ok(roomService.getByCode(code));
     }
+
+    @GetMapping("/participants")
+    public ResponseEntity<?> getParticipants(@RequestParam("roomCode") String roomCode) {
+        return ResponseEntity.ok(roomService.getParticipants(roomCode));
+    }
 }

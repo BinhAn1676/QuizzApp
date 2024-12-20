@@ -21,6 +21,8 @@ public class Quizz extends BaseEntity{
     private String title;
     private String description;
     private Integer status;
+    @Column(name = "image_url")
+    private String imageUrl;
     @ManyToOne
     @JoinColumn(name = "topic_id")
     private Topic topic;
@@ -29,4 +31,6 @@ public class Quizz extends BaseEntity{
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Note> notes = new ArrayList<>();
+    @OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Review> reviews = new ArrayList<>();
 }
