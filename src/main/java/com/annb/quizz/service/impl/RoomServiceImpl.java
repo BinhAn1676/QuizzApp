@@ -36,6 +36,8 @@ public class RoomServiceImpl implements RoomService {
         response.setIsActive(saved.getIsActive());
         response.setCode(saved.getCode());
         response.setId(saved.getId());
+        response.setCreatedBy(saved.getCreatedBy());
+
         return response;
     }
 

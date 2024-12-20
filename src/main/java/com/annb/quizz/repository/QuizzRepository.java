@@ -105,7 +105,7 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
             @Param("status") Integer status,
             Pageable pageable);
 
-    @Query(value = """
+    /*@Query(value = """
         SELECT 
             q.id,
             q.title,
@@ -134,6 +134,43 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
                 review r ON q.id = r.quizz_id
             LEFT JOIN 
                 comment c ON c.quizz_id = q.id
+        """,
+            nativeQuery = true)
+    Page<Object[]> findSuggestedQuizzes(Pageable pageable);*/
+    @Query(value = """
+        SELECT 
+            q.id,
+            q.title,
+            q.description,
+            q.status,
+            q.topic_id,
+            IFNULL(AVG(r.rating), 0) AS averageRating,
+            IFNULL(COUNT(c.id), 0) AS totalComments,
+            IFNULL(COUNT(DISTINCT ques.id), 0) AS totalQuestions
+        FROM 
+            quizz q
+        LEFT JOIN 
+            review r ON q.id = r.quizz_id
+        LEFT JOIN 
+            comment c ON c.quizz_id = q.id
+        LEFT JOIN 
+            question ques ON ques.quizz_id = q.id
+        GROUP BY 
+            q.id, q.title, q.description, q.status, q.topic_id
+        ORDER BY 
+            AVG(r.rating) DESC, COUNT(c.id) DESC
+        """,
+            countQuery = """
+            SELECT 
+                COUNT(DISTINCT q.id)
+            FROM 
+                quizz q
+            LEFT JOIN 
+                review r ON q.id = r.quizz_id
+            LEFT JOIN 
+                comment c ON c.quizz_id = q.id
+            LEFT JOIN 
+                question ques ON ques.quizz_id = q.id
         """,
             nativeQuery = true)
     Page<Object[]> findSuggestedQuizzes(Pageable pageable);
