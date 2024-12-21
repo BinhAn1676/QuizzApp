@@ -37,6 +37,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         if(participantOptional.isPresent()) {
             Participant participant = participantOptional.get();
             participant.setIsActive(CommonConstant.Status.ACTIVE);
+            participant.setRoom(room);
             var saved =  participantRepository.save(participant);
             var res = new ParticipantResponse();
             res.setId(saved.getId());
@@ -96,6 +97,7 @@ public class ParticipantServiceImpl implements ParticipantService {
         Participant participant = participantRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Participant", "username", username));
         participant.setIsActive(CommonConstant.Status.INACTIVE);
+        participant.setRoom(null);
         var saved =  participantRepository.save(participant);
         var res = new ParticipantResponse();
         res.setId(saved.getId());

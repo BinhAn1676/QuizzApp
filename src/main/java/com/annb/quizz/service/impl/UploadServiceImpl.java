@@ -25,7 +25,7 @@ public class UploadServiceImpl implements UploadFileService {
     private final Logger log = Logger.getLogger(UploadServiceImpl.class.getName());
     private final Cloudinary cloudinary;
 
-    @Override
+    /*@Override
     public String uploadImage(MultipartFile file) {
         try{
             assert file.getOriginalFilename() != null;
@@ -41,6 +41,34 @@ public class UploadServiceImpl implements UploadFileService {
             System.out.println("UPLOAD RESULT " + uploadResult);
             // Generate the URL
             return cloudinary.url().generate(join(publicValue, ".", extension));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }*/
+    @Override
+    public String uploadImage(MultipartFile file) {
+        try {
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null) {
+                throw new IllegalArgumentException("File name cannot be null");
+            }
+
+            String publicValue = generatePublicValue(originalFilename);
+            System.out.println("publicValue is: {" + publicValue + "}");
+
+            String extension = getFileName(originalFilename)[1];
+            System.out.println("extension is: {" + extension + "}");
+
+            byte[] bytes = file.getBytes();
+            Map uploadResult = cloudinary.uploader().upload(
+                    bytes,
+                    ObjectUtils.asMap("public_id", publicValue)
+            );
+            System.out.println("UPLOAD RESULT " + uploadResult);
+
+            // Return the secure URL from the upload result
+            return uploadResult.get("secure_url").toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -66,11 +94,14 @@ public class UploadServiceImpl implements UploadFileService {
         }
     }
 
-    public String generatePublicValue(String originalName) {
+    /*public String generatePublicValue(String originalName) {
         String fileName = getFileName(originalName)[0];
         return join(UUID.randomUUID().toString(), "_", fileName);
+    }*/
+    public String generatePublicValue(String originalName) {
+        String fileName = getFileName(originalName)[0];
+        return UUID.randomUUID().toString() + "_" + fileName;
     }
-
     public String[] getFileName(String originalName) {
         return originalName.split("\\.");
     }
