@@ -369,6 +369,7 @@ public class QuizzServiceImpl implements QuizzService {
                     dto.setAverageRating(((Number) row[5]).doubleValue());
                     dto.setTotalComments(((Number) row[6]).intValue());
                     dto.setTotalQuestions(((Number) row[7]).intValue());
+                    dto.setImageUrl((String) row[8]);
                     return dto;
                 })
                 .collect(Collectors.toList());

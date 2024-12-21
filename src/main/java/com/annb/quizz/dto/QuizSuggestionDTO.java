@@ -18,5 +18,5 @@ public class QuizSuggestionDTO {
     private double averageRating;
     private int totalComments;
     private int totalQuestions;
-
+    private String imageUrl;
 }

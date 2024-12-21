@@ -146,7 +146,8 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
             q.topic_id,
             IFNULL(AVG(r.rating), 0) AS averageRating,
             IFNULL(COUNT(c.id), 0) AS totalComments,
-            IFNULL(COUNT(DISTINCT ques.id), 0) AS totalQuestions
+            IFNULL(COUNT(DISTINCT ques.id), 0) AS totalQuestions,
+            q.image_url
         FROM 
             quizz q
         LEFT JOIN 
