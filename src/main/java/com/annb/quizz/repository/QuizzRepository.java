@@ -137,7 +137,7 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
         """,
             nativeQuery = true)
     Page<Object[]> findSuggestedQuizzes(Pageable pageable);*/
-    @Query(value = """
+    /*@Query(value = """
         SELECT 
             q.id,
             q.title,
@@ -174,6 +174,56 @@ public interface QuizzRepository extends JpaRepository<Quizz, String> {
                 question ques ON ques.quizz_id = q.id
         """,
             nativeQuery = true)
+    Page<Object[]> findSuggestedQuizzes(Pageable pageable);*/
+    /*@Query(value = """
+    SELECT 
+        q.id,
+        q.title,
+        q.description,
+        q.status,
+        q.topic_id,
+        q.image_url,
+        IFNULL((SELECT AVG(r.rating) FROM review r WHERE r.quizz_id = q.id), 0) AS averageRating,
+        IFNULL((SELECT COUNT(c.id) FROM comment c WHERE c.quizz_id = q.id), 0) AS totalComments,
+        IFNULL((SELECT COUNT(ques.id) FROM question ques WHERE ques.quizz_id = q.id), 0) AS totalQuestions
+    FROM 
+        quizz q
+    ORDER BY 
+        averageRating DESC, totalComments DESC
+    """,
+            countQuery = """
+        SELECT 
+            COUNT(DISTINCT q.id)
+        FROM 
+            quizz q
+        """,
+            nativeQuery = true)
+    Page<Object[]> findSuggestedQuizzes(Pageable pageable);*/
+    @Query(value = """
+    SELECT 
+        q.id,
+        q.title,
+        q.description,
+        q.status,
+        q.topic_id,
+        q.image_url,
+        CAST(IFNULL((SELECT AVG(r.rating) FROM review r WHERE r.quizz_id = q.id), 0) AS DOUBLE) AS averageRating,
+        IFNULL((SELECT COUNT(c.id) FROM comment c WHERE c.quizz_id = q.id), 0) AS totalComments,
+        IFNULL((SELECT COUNT(ques.id) FROM question ques WHERE ques.quizz_id = q.id), 0) AS totalQuestions
+    FROM 
+        quizz q
+    ORDER BY 
+        averageRating DESC, totalComments DESC
+    """,
+            countQuery = """
+        SELECT 
+            COUNT(DISTINCT q.id)
+        FROM 
+            quizz q
+        """,
+            nativeQuery = true)
     Page<Object[]> findSuggestedQuizzes(Pageable pageable);
+
+
 }
 

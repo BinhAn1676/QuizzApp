@@ -366,10 +366,12 @@ public class QuizzServiceImpl implements QuizzService {
                     dto.setDescription((String) row[2]);
                     dto.setStatus((Integer) row[3]);
                     dto.setTopicId((String) row[4]);
-                    dto.setAverageRating(((Number) row[5]).doubleValue());
-                    dto.setTotalComments(((Number) row[6]).intValue());
-                    dto.setTotalQuestions(((Number) row[7]).intValue());
-                    dto.setImageUrl((String) row[8]);
+                    dto.setImageUrl((String) row[5]);
+                    //dto.setAverageRating(((Number) row[5]).doubleValue());
+                    dto.setAverageRating((Double.parseDouble(row[6].toString())));
+                    dto.setTotalComments(((Number) row[7]).intValue());
+                    dto.setTotalQuestions(((Number) row[8]).intValue());
+
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -381,7 +383,7 @@ public class QuizzServiceImpl implements QuizzService {
     @Override
     public QuizResponse generateByAI(QuizGenerateRequest request) {
         // Create the prompt for the Gemini API
-        String prompt = String.format("Tạo bộ câu hỏi %d câu về chủ đề '%s'. Format JSON chi tiết như sau: %s",
+        String prompt = String.format("Tạo bộ câu hỏi %d câu về chủ đề '%s' , với đáp án là multiple choice hoặc điền 1 đáp án đúng , câu hòi và câu trả lời đừng quá dài. Format JSON chi tiết như sau: %s",
                 request.getNumberOfQuestions(), request.getPrompt(), getExpectedJsonFormat());
 
         // Prepare the message for the Gemini API

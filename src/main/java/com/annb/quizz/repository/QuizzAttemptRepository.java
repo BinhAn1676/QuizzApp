@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 public interface QuizzAttemptRepository extends JpaRepository<QuizzAttempt, String> {
     @Query(value = "SELECT qa.* FROM quizz_attempt qa " +
             "JOIN quizz q ON qa.quizz_id = q.id " +
-            "JOIN topic t ON q.topic_id = t.id " +
-            "WHERE (:textSearch IS NULL OR qa.created_by LIKE %:textSearch% OR q.id LIKE %:textSearch% OR q.title LIKE %:textSearch% OR t.code LIKE %:textSearch%) " +
+            "WHERE (:textSearch IS NULL OR qa.created_by LIKE %:textSearch%) " +
             "AND (:status IS NULL OR qa.is_pass = :status) " +
             "AND (:from IS NULL OR DATE(qa.created_at) >= DATE(:from)) " +
             "AND (:to IS NULL OR DATE(qa.created_at) <= DATE(:to))",
@@ -25,4 +24,16 @@ public interface QuizzAttemptRepository extends JpaRepository<QuizzAttempt, Stri
                                     @Param("to") LocalDateTime to,
                                     @Param("status") Boolean isPass,
                                     Pageable pageable);
+    @Query(value = "SELECT qa FROM QuizzAttempt qa " +
+            "JOIN qa.quizz q " +
+            "WHERE (:textSearch IS NULL OR qa.createdBy LIKE CONCAT('%', :textSearch, '%')) " +
+            "AND (:status IS NULL OR qa.isPass = :status) " +
+            "AND (:from IS NULL OR qa.createdAt >= :from) " +
+            "AND (:to IS NULL OR qa.createdAt <= :to)")
+    Page<QuizzAttempt> findFilteredV2(@Param("textSearch") String textSearch,
+                                      @Param("from") LocalDateTime from,
+                                      @Param("to") LocalDateTime to,
+                                      @Param("status") Boolean isPass,
+                                      Pageable pageable);
+
 }
