@@ -1,5 +1,7 @@
 package com.annb.quizz.service.impl;
 
+import com.annb.quizz.dto.AnswerSubmission;
+import com.annb.quizz.dto.UserScore;
 import com.annb.quizz.dto.request.QuestionRequest;
 import com.annb.quizz.dto.response.AnswerResponse;
 import com.annb.quizz.dto.response.QuestionResponse;
@@ -134,5 +136,12 @@ public class QuestionServiceImpl implements QuestionService {
                 }).toList();
         response.setAnswers(answerResponse);
         return response;
+    }
+
+    @Override
+    public UserScore updateScore(String roomId, AnswerSubmission submission) {
+        var room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room", "id", roomId));
+        var user = new UserScore(submission.getUsername(), submission.getScore());
+        return user;
     }
 }

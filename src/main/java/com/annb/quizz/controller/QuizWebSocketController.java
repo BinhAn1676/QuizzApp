@@ -1,5 +1,7 @@
 package com.annb.quizz.controller;
 
+import com.annb.quizz.dto.AnswerSubmission;
+import com.annb.quizz.dto.UserScore;
 import com.annb.quizz.dto.response.QuestionResponse;
 import com.annb.quizz.exception.ResourceNotFoundException;
 import com.annb.quizz.service.QuestionService;
@@ -23,5 +25,10 @@ public class QuizWebSocketController {
     public QuestionResponse sendNextQuestion(@DestinationVariable String roomId,String id) {
         return questionService.getQuestionFromRoom(roomId,id); // This sends the question to the specified topic
     }
-
+    @MessageMapping("/room/{roomId}/update-score")
+    @SendTo("/topic/room/{roomId}/user-score") // Broadcast updated user data to all participants
+    public UserScore updateUserScore(@DestinationVariable String roomId, AnswerSubmission submission) {
+        var response = questionService.updateScore(roomId,submission);
+        return response;
+    }
 }
