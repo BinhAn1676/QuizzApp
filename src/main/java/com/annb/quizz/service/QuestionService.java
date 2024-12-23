@@ -15,5 +15,5 @@ public interface QuestionService {
 
     QuestionResponse getQuestionFromRoom(String roomId, String id);
 
-    UserScore updateScore(String roomId,String username,String score);
+    UserScore updateScore(String roomId,UserScore userScore);
 }

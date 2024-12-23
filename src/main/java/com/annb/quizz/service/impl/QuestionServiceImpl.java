@@ -139,9 +139,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public UserScore updateScore(String roomId, String username,String score) {
+    public UserScore updateScore(String roomId, UserScore userScore) {
         var room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room", "id", roomId));
-        var user = new UserScore(username, score);
+        var user = new UserScore(userScore.getUsername(), userScore.getScore());
         return user;
     }
 }
