@@ -27,8 +27,8 @@ public class QuizWebSocketController {
     }
     @MessageMapping("/room/{roomId}/update-score")
     @SendTo("/topic/room/{roomId}/user-score") // Broadcast updated user data to all participants
-    public UserScore updateUserScore(@DestinationVariable String roomId, AnswerSubmission submission) {
-        var response = questionService.updateScore(roomId,submission);
+    public UserScore updateUserScore(@DestinationVariable String roomId,String username,String score) {
+        var response = questionService.updateScore(roomId,username,score);
         return response;
     }
 }

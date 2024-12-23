@@ -11,5 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserScore {
     private String username;
-    private Double score;
+    private String score;
 }

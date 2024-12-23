@@ -12,4 +12,5 @@ public interface QuizzAttemptService {
 
     Page<QuizAttemptResponse> fitlerQuizLog(@Valid AttemptLogRequest req);
 
+    QuizAttemptResponse getQuizAttempt(String id);
 }

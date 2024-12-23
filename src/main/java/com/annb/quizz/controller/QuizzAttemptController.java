@@ -26,5 +26,10 @@ public class QuizzAttemptController {
         var res = quizzAttemptService.fitlerQuizLog(req);
         return ResponseEntity.ok(res);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getQuizAttempt(@PathVariable("id") String id) {
+        var res = quizzAttemptService.getQuizAttempt(id);
+        return ResponseEntity.ok(res);
+    }
 
 }

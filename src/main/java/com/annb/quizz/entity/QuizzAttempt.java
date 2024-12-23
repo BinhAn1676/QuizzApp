@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "quizz_attempt")
 @Setter
@@ -21,4 +24,6 @@ public class QuizzAttempt extends BaseEntity{
     private Quizz quizz;
     @Column(name = "is_pass")
     private Boolean isPass;
+    @OneToMany(mappedBy = "quizzAttempt", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AttemptAnswer> attemptAnswers = new ArrayList<>();
 }
