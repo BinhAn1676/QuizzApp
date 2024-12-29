@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.annb.quizz.constant.CommonConstant.Status.INACTIVE;
+
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
@@ -66,6 +68,21 @@ public class RoomServiceImpl implements RoomService {
                     participantResponse.setScore(element.getScore());
                     return participantResponse;
                 }).toList();
+    }
+
+    @Override
+    public RoomResponse startRoom(String roomId) {
+        var room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room", "Id", roomId));
+        room.setIsActive(false);
+        var saved = roomRepository.save(room);
+        var response = new RoomResponse();
+        response.setIsActive(saved.getIsActive());
+        response.setCode(saved.getCode());
+        response.setId(saved.getId());
+        response.setCreatedBy(saved.getCreatedBy());
+
+        return response;
     }
 
 }

@@ -17,6 +17,12 @@ public class RoomController {
         return ResponseEntity.ok(room);
     }
 
+    @PostMapping("/start")
+    public ResponseEntity<?> startRoom(@RequestParam("roomId") String roomId) {
+        var room = roomService.startRoom(roomId);
+        return ResponseEntity.ok(room);
+    }
+
     @GetMapping("/get-by-code/{code}")
     public ResponseEntity<?> getRoomByCode(@PathVariable("code") String code) {
         return ResponseEntity.ok(roomService.getByCode(code));

@@ -9,6 +9,7 @@ import com.annb.quizz.dto.response.ParticipantResponse;
 import com.annb.quizz.entity.Participant;
 import com.annb.quizz.entity.Room;
 import com.annb.quizz.exception.ResourceNotFoundException;
+import com.annb.quizz.exception.RoomStartException;
 import com.annb.quizz.repository.ParticipantRepository;
 import com.annb.quizz.repository.RoomRepository;
 import com.annb.quizz.service.ParticipantService;
@@ -33,6 +34,9 @@ public class ParticipantServiceImpl implements ParticipantService {
     public ParticipantResponse joinRoom(String roomCode, String username) {
         Room room = roomRepository.findByCode(roomCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Room", "Code", roomCode));
+        if(!room.getIsActive()){
+            throw new RoomStartException("Room");
+        }
         var participantOptional = participantRepository.findByUsername(username);
         if(participantOptional.isPresent()) {
             Participant participant = participantOptional.get();

@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AttemptLogRequest  extends BaseFilter{
     private Boolean isPass;
+    private String quizId;
 }

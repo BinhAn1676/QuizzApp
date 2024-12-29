@@ -27,10 +27,12 @@ public interface QuizzAttemptRepository extends JpaRepository<QuizzAttempt, Stri
     @Query(value = "SELECT qa FROM QuizzAttempt qa " +
             "JOIN qa.quizz q " +
             "WHERE (:textSearch IS NULL OR qa.createdBy LIKE CONCAT('%', :textSearch, '%')) " +
+            "AND (:quizId IS NULL OR qa.quizz.id = :quizId) " +
             "AND (:status IS NULL OR qa.isPass = :status) " +
             "AND (:from IS NULL OR qa.createdAt >= :from) " +
             "AND (:to IS NULL OR qa.createdAt <= :to)")
     Page<QuizzAttempt> findFilteredV2(@Param("textSearch") String textSearch,
+                                      @Param("quizId") String quizId,
                                       @Param("from") LocalDateTime from,
                                       @Param("to") LocalDateTime to,
                                       @Param("status") Boolean isPass,

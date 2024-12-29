@@ -35,4 +35,6 @@ public class Quizz extends BaseEntity{
     private List<Review> reviews = new ArrayList<>();
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Room> rooms = new ArrayList<>();
+    @OneToMany(mappedBy = "quizz", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<QuizzAttempt> quizzAttempts = new ArrayList<>();
 }

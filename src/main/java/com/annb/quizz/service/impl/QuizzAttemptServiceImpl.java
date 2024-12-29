@@ -82,7 +82,7 @@ public class QuizzAttemptServiceImpl implements QuizzAttemptService {
     @Override
     public Page<QuizAttemptResponse> fitlerQuizLog(AttemptLogRequest req) {
         Pageable pageable = PageRequest.of(req.getPageNo(), req.getPageSize());
-        var quizzAttempts =  quizzAttemptRepository.findFilteredV2(req.getTextSearch(), req.getFrom(), req.getTo(),req.getIsPass(), pageable);
+        var quizzAttempts =  quizzAttemptRepository.findFilteredV2(req.getTextSearch(),req.getQuizId(), req.getFrom(), req.getTo(),req.getIsPass(), pageable);
         return quizzAttempts.map(quiz -> {
             QuizAttemptResponse dto = new QuizAttemptResponse();
             dto.setId(quiz.getId());
